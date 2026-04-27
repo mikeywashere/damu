@@ -1,9 +1,12 @@
+using DamYou.ViewModels;
+
 namespace DamYou.Views;
 
 public partial class LibraryView : ContentPage
 {
-    public LibraryView()
+    public LibraryView(LibraryViewModel vm)
     {
         InitializeComponent();
+        BindingContext = vm;
     }
 }

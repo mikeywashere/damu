@@ -50,10 +50,12 @@ public static class MauiProgram
         // ViewModels
         builder.Services.AddTransient<LibrarySetupViewModel>();
         builder.Services.AddTransient<LibraryViewModel>();
+        builder.Services.AddTransient<TasksViewModel>();
 
         // Views
         builder.Services.AddTransient<LibrarySetupView>();
         builder.Services.AddTransient<LibraryView>();
+        builder.Services.AddTransient<TasksView>();
 
         // App
         builder.Services.AddSingleton<App>();

@@ -1,10 +1,80 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DamYou.ViewModels"
              x:Class="DamYou.Views.LibraryView"
-             Title="Your Library">
-    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
-        <Label Text="📷 Library" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
-        <Label Text="Photos will appear here once indexing is complete." Opacity="0.6" HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:DataType="vm:LibraryViewModel"
+             Title="Your Library"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="40">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4" Margin="0,0,0,24">
+            <Label Text="📷 Your Library"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Scan progress (visible only while scanning) -->
+        <VerticalStackLayout Grid.Row="1"
+                             IsVisible="{Binding IsScanning}"
+                             Spacing="6"
+                             Margin="0,0,0,16">
+            <Label Text="Scanning library…"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+            <Label Text="{Binding ScanProgressText}"
+                   FontSize="12"
+                   HorizontalOptions="Center"
+                   Opacity="0.7" />
+            <Label Text="{Binding ScanCurrentFolder}"
+                   FontSize="11"
+                   HorizontalOptions="Center"
+                   Opacity="0.5"
+                   LineBreakMode="MiddleTruncation" />
+            <ActivityIndicator IsRunning="{Binding IsScanning}"
+                               HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Main content -->
+        <VerticalStackLayout Grid.Row="2"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Spacing="12">
+            <Label Text="Photos will appear here once indexing is complete."
+                   Opacity="0.6"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Footer: action buttons + queue badge -->
+        <Grid Grid.Row="3" Margin="0,16,0,0" ColumnDefinitions="*,Auto">
+
+            <!-- Queue depth badge -->
+            <Label Grid.Column="0"
+                   IsVisible="{Binding QueueDepth, Converter={StaticResource IntToBoolConverter}}"
+                   FontSize="12"
+                   Opacity="0.7"
+                   VerticalOptions="Center">
+                <Label.Text>
+                    <Binding Path="QueueDepth" StringFormat="Queue: {0}" />
+                </Label.Text>
+            </Label>
+
+            <!-- Action buttons -->
+            <HorizontalStackLayout Grid.Column="1" Spacing="12">
+                <Button Text="🔄 Rescan Library"
+                        Command="{Binding RescanLibraryCommand}"
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource InvertBoolConverter}}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+                <Button Text="📋 View Tasks"
+                        Command="{Binding ViewTasksCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+            </HorizontalStackLayout>
+
+        </Grid>
+
+    </Grid>
 </ContentPage>
