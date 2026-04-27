@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DamYou.Views.LibraryView"
+             Title="Your Library">
+    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+        <Label Text="📷 Library" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Text="Photos will appear here once indexing is complete." Opacity="0.6" HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>
