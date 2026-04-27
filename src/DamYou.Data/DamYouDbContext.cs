@@ -1,4 +1,5 @@
 using DamYou.Data.Entities;
+using DamYou.Data.Pipeline;
 using Microsoft.EntityFrameworkCore;
 
 namespace DamYou.Data;
@@ -9,6 +10,7 @@ public sealed class DamYouDbContext : DbContext
 
     public DbSet<WatchedFolder> WatchedFolders => Set<WatchedFolder>();
     public DbSet<Photo> Photos => Set<Photo>();
+    public DbSet<PipelineTask> PipelineTasks => Set<PipelineTask>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +35,19 @@ public sealed class DamYouDbContext : DbContext
              .WithMany()
              .HasForeignKey(x => x.WatchedFolderId)
              .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PipelineTask>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Status).HasDatabaseName("IX_PipelineTasks_Status");
+            e.HasIndex(x => x.PhotoId).HasDatabaseName("IX_PipelineTasks_PhotoId");
+            e.HasIndex(x => x.CreatedAt).HasDatabaseName("IX_PipelineTasks_CreatedAt");
+            e.HasOne(x => x.Photo)
+             .WithMany()
+             .HasForeignKey(x => x.PhotoId)
+             .OnDelete(DeleteBehavior.SetNull)
+             .IsRequired(false);
         });
     }
 }

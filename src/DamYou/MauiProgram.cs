@@ -1,5 +1,6 @@
 using DamYou.Data;
 using DamYou.Data.Import;
+using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
 using DamYou.Services;
 using DamYou.ViewModels;
@@ -38,6 +39,10 @@ public static class MauiProgram
 
         // Import
         builder.Services.AddScoped<IPhotoImportService, PhotoImportService>();
+
+        // Pipeline
+        builder.Services.AddScoped<IPipelineTaskRepository, PipelineTaskRepository>();
+        builder.Services.AddScoped<ILibraryScanService, LibraryScanService>();
 
         // Services
         builder.Services.AddSingleton<IFolderPickerService, FolderPickerService>();

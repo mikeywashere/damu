@@ -14,4 +14,5 @@ public sealed class Photo
     public int? Height { get; set; }
     public DateTime DateIndexed { get; set; }
     public bool IsDeleted { get; set; } = false;
+    public bool IsProcessed { get; set; } = false;
 }
