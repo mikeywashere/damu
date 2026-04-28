@@ -84,7 +84,7 @@ public sealed class LibraryScanServiceTests : IDisposable
         await _sut.ScanAsync();
 
         var photos = await _db.Photos.ToListAsync();
-        Assert.All(photos, p => Assert.False(p.IsProcessed));
+        Assert.All(photos, p => Assert.Equal(ProcessingStatus.Unprocessed, p.Status));
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class LibraryScanServiceTests : IDisposable
             FileName = Path.GetFileName(filePath),
             FilePath = filePath,
             FileSizeBytes = new FileInfo(filePath).Length,
-            IsProcessed = false,
+            Status = ProcessingStatus.Unprocessed,
             DateIndexed = DateTime.UtcNow
         };
         _db.Photos.Add(photo);
@@ -137,7 +137,7 @@ public sealed class LibraryScanServiceTests : IDisposable
             FileName = Path.GetFileName(filePath),
             FilePath = filePath,
             FileSizeBytes = new FileInfo(filePath).Length,
-            IsProcessed = false,
+            Status = ProcessingStatus.Unprocessed,
             DateIndexed = DateTime.UtcNow
         };
         _db.Photos.Add(photo);

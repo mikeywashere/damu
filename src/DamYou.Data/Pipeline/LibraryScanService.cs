@@ -75,7 +75,7 @@ public sealed class LibraryScanService : ILibraryScanService
                                 FileSizeBytes = info.Length,
                                 FileHash = hash,
                                 DateIndexed = DateTime.UtcNow,
-                                IsProcessed = false
+                                Status = ProcessingStatus.Unprocessed
                             };
                             _db.Photos.Add(photo);
                             await _db.SaveChangesAsync(ct);
@@ -86,7 +86,7 @@ public sealed class LibraryScanService : ILibraryScanService
                         catch (IOException) { /* skip unreadable files */ }
                         catch (UnauthorizedAccessException) { /* skip inaccessible files */ }
                     }
-                    else if (!existing.IsProcessed)
+                    else if (existing.Status == ProcessingStatus.Unprocessed)
                     {
                         var alreadyQueued = await _db.PipelineTasks.AnyAsync(
                             t => t.PhotoId == existing.Id && t.Status == PipelineTaskStatus.Queued, ct);

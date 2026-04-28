@@ -124,7 +124,7 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
         catch (OperationCanceledException) { throw; }
         catch { }
 
-        photo.IsProcessed = true;
+        photo.Status = ProcessingStatus.Processed;
         await _db.SaveChangesAsync(ct);
     }
 

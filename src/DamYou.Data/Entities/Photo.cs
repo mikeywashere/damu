@@ -14,5 +14,12 @@ public sealed class Photo
     public int? Height { get; set; }
     public DateTime DateIndexed { get; set; }
     public bool IsDeleted { get; set; } = false;
-    public bool IsProcessed { get; set; } = false;
+    public ProcessingStatus Status { get; set; } = ProcessingStatus.Unprocessed;
+}
+
+public enum ProcessingStatus
+{
+    Unprocessed = 0,
+    Processing = 1,
+    Processed = 2
 }
