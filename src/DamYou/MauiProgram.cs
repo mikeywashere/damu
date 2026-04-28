@@ -1,4 +1,5 @@
 using DamYou.Data;
+using DamYou.Data.Analysis;
 using DamYou.Data.Import;
 using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
@@ -46,6 +47,19 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<IFolderPickerService, FolderPickerService>();
+
+        // Analysis services (singletons — expensive ONNX sessions)
+        builder.Services.AddSingleton<IHardwareDetectionService, HardwareDetectionService>();
+        builder.Services.AddSingleton<IModelManagerService, ModelManagerService>();
+        builder.Services.AddSingleton<IClipService, ClipService>();
+        builder.Services.AddSingleton<IYoloDetectionService, YoloDetectionService>();
+        builder.Services.AddSingleton<IOcrService, WindowsOcrService>();
+        builder.Services.AddSingleton<IDistilBertService, DistilBertService>();
+        builder.Services.AddSingleton<IColorExtractionService, ColorExtractionService>();
+
+        // Orchestration (scoped — shares DbContext)
+        builder.Services.AddScoped<IPhotoAnalysisService, PhotoAnalysisService>();
+        builder.Services.AddScoped<IPipelineProcessorService, PipelineProcessorService>();
 
         // ViewModels
         builder.Services.AddTransient<LibrarySetupViewModel>();

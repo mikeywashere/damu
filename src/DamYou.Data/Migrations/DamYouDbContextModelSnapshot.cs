@@ -75,6 +75,135 @@ namespace DamYou.Data.Migrations
                     b.ToTable("Photos");
                 });
 
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoColorPalette", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ColorsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PhotoId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhotoId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PhotoColorPalette_PhotoId");
+
+                    b.ToTable("PhotoColorPalettes");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoDetectedObject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("BoundingBoxHeight")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("BoundingBoxWidth")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("BoundingBoxX")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("BoundingBoxY")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("Confidence")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PhotoId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Label")
+                        .HasDatabaseName("IX_PhotoDetectedObjects_Label");
+
+                    b.HasIndex("PhotoId")
+                        .HasDatabaseName("IX_PhotoDetectedObjects_PhotoId");
+
+                    b.ToTable("PhotoDetectedObjects");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoEmbedding", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Dimensions")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PhotoId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhotoId")
+                        .HasDatabaseName("IX_PhotoEmbeddings_PhotoId");
+
+                    b.HasIndex("PhotoId", "ModelName")
+                        .HasDatabaseName("IX_PhotoEmbeddings_PhotoId_ModelName");
+
+                    b.ToTable("PhotoEmbeddings");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoOcrText", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullText")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PhotoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("TextEmbedding")
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhotoId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PhotoOcrText_PhotoId");
+
+                    b.ToTable("PhotoOcrTexts");
+                });
+
             modelBuilder.Entity("DamYou.Data.Entities.PipelineTask", b =>
                 {
                     b.Property<int>("Id")
@@ -150,6 +279,50 @@ namespace DamYou.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("WatchedFolder");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoColorPalette", b =>
+                {
+                    b.HasOne("DamYou.Data.Entities.Photo", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Photo");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoDetectedObject", b =>
+                {
+                    b.HasOne("DamYou.Data.Entities.Photo", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Photo");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoEmbedding", b =>
+                {
+                    b.HasOne("DamYou.Data.Entities.Photo", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Photo");
+                });
+
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoOcrText", b =>
+                {
+                    b.HasOne("DamYou.Data.Entities.Photo", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Photo");
                 });
 
             modelBuilder.Entity("DamYou.Data.Entities.PipelineTask", b =>

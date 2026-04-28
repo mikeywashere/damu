@@ -528,3 +528,12 @@ C:\src\mikeywashere\dam-you\src\DamYou\obj\Debug\net9.0-windows10.0.19041.0\win1
 C:\src\mikeywashere\dam-you\src\DamYou\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 C:\src\mikeywashere\dam-you\src\DamYou\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 C:\src\mikeywashere\dam-you\src\DamYou\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.ML.OnnxRuntime.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.SystemEvents.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.CodeDom.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Drawing.Common.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Private.Windows.Core.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Management.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\onnxruntime.dll
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\onnxruntime.lib
+C:\src\mikeywashere\dam-you\src\DamYou\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\ortextensions.dll

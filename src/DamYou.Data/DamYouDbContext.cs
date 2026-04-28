@@ -11,6 +11,10 @@ public sealed class DamYouDbContext : DbContext
     public DbSet<WatchedFolder> WatchedFolders => Set<WatchedFolder>();
     public DbSet<Photo> Photos => Set<Photo>();
     public DbSet<PipelineTask> PipelineTasks => Set<PipelineTask>();
+    public DbSet<PhotoEmbedding> PhotoEmbeddings => Set<PhotoEmbedding>();
+    public DbSet<PhotoDetectedObject> PhotoDetectedObjects => Set<PhotoDetectedObject>();
+    public DbSet<PhotoOcrText> PhotoOcrTexts => Set<PhotoOcrText>();
+    public DbSet<PhotoColorPalette> PhotoColorPalettes => Set<PhotoColorPalette>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,6 +52,37 @@ public sealed class DamYouDbContext : DbContext
              .HasForeignKey(x => x.PhotoId)
              .OnDelete(DeleteBehavior.SetNull)
              .IsRequired(false);
+        });
+
+        modelBuilder.Entity<PhotoEmbedding>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.PhotoId).HasDatabaseName("IX_PhotoEmbeddings_PhotoId");
+            e.HasIndex(x => new { x.PhotoId, x.ModelName }).HasDatabaseName("IX_PhotoEmbeddings_PhotoId_ModelName");
+            e.HasOne(x => x.Photo).WithMany().HasForeignKey(x => x.PhotoId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.Embedding).IsRequired();
+        });
+
+        modelBuilder.Entity<PhotoDetectedObject>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.PhotoId).HasDatabaseName("IX_PhotoDetectedObjects_PhotoId");
+            e.HasIndex(x => x.Label).HasDatabaseName("IX_PhotoDetectedObjects_Label");
+            e.HasOne(x => x.Photo).WithMany().HasForeignKey(x => x.PhotoId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PhotoOcrText>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.PhotoId).IsUnique().HasDatabaseName("IX_PhotoOcrText_PhotoId");
+            e.HasOne(x => x.Photo).WithMany().HasForeignKey(x => x.PhotoId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PhotoColorPalette>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.PhotoId).IsUnique().HasDatabaseName("IX_PhotoColorPalette_PhotoId");
+            e.HasOne(x => x.Photo).WithMany().HasForeignKey(x => x.PhotoId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -10,5 +10,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Drawing.Common" Version="9.*" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.19.*" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Extensions" Version="0.13.*" />
+    <PackageReference Include="System.Management" Version="9.*" />
   </ItemGroup>
 </Project>

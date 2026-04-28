@@ -1,7 +1,7 @@
 {
   "version": 4,
   "targets": {
-    "net9.0": {
+    "net9.0-windows10.0.19041.0": {
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -13,6 +13,13 @@
           "lib/net6.0/Humanizer.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "Microsoft.AI.DirectML/1.15.1": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.AI.DirectML.props": {},
+          "build/Microsoft.AI.DirectML.targets": {}
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
@@ -593,6 +600,129 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
+      "Microsoft.ML.OnnxRuntime.DirectML/1.19.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AI.DirectML": "1.15.1",
+          "Microsoft.ML.OnnxRuntime.Managed": "1.19.2"
+        },
+        "build": {
+          "build/netstandard2.1/Microsoft.ML.OnnxRuntime.DirectML.props": {},
+          "build/netstandard2.1/Microsoft.ML.OnnxRuntime.DirectML.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-arm64/native/onnxruntime.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-arm64/native/onnxruntime.lib": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/onnxruntime.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/onnxruntime.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/onnxruntime.lib": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Extensions/0.13.0": {
+        "type": "package",
+        "build": {
+          "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Extensions.props": {},
+          "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Extensions.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/android/native/onnxruntime-extensions.aar": {
+            "assetType": "native",
+            "rid": "android"
+          },
+          "runtimes/ios/native/onnxruntime_extensions.xcframework.zip": {
+            "assetType": "native",
+            "rid": "ios"
+          },
+          "runtimes/linux-arm64/native/libortextensions.so": {
+            "assetType": "native",
+            "rid": "linux-arm64"
+          },
+          "runtimes/linux-x64/native/libortextensions.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/osx.10.14-arm64/native/libortextensions.dylib": {
+            "assetType": "native",
+            "rid": "osx.10.14-arm64"
+          },
+          "runtimes/osx.10.14-x64/native/libortextensions.dylib": {
+            "assetType": "native",
+            "rid": "osx.10.14-x64"
+          },
+          "runtimes/win-arm64/native/ortextensions.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/ortextensions.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/ortextensions.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Managed/1.19.2": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.5"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.ML.OnnxRuntime.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.ML.OnnxRuntime.dll": {
+            "related": ".pdb"
+          }
+        },
+        "build": {
+          "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Managed.targets": {}
+        }
+      },
+      "Microsoft.Win32.SystemEvents/9.0.15": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
+      },
       "Mono.TextTemplating/2.2.1": {
         "type": "package",
         "dependencies": {
@@ -730,21 +860,26 @@
           "SQLitePCLRaw.core": "2.1.6"
         },
         "compile": {
-          "lib/net6.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
+          "lib/net6.0-windows7.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
         },
         "runtime": {
-          "lib/net6.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
+          "lib/net6.0-windows7.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
         }
       },
-      "System.CodeDom/4.4.0": {
+      "System.CodeDom/9.0.15": {
         "type": "package",
         "compile": {
-          "ref/netstandard2.0/_._": {
+          "lib/net9.0/System.CodeDom.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/System.CodeDom.dll": {}
+          "lib/net9.0/System.CodeDom.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
         }
       },
       "System.Collections.Immutable/6.0.0": {
@@ -870,6 +1005,31 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
+      "System.Drawing.Common/9.0.15": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "9.0.15"
+        },
+        "compile": {
+          "lib/net9.0/System.Drawing.Common.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net9.0/System.Private.Windows.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/System.Drawing.Common.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net9.0/System.Private.Windows.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
       "System.IO.Pipelines/6.0.3": {
         "type": "package",
         "compile": {
@@ -886,7 +1046,32 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
-      "System.Memory/4.5.3": {
+      "System.Management/9.0.15": {
+        "type": "package",
+        "dependencies": {
+          "System.CodeDom": "9.0.15"
+        },
+        "compile": {
+          "lib/net9.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net9.0/System.Management.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
+      },
+      "System.Memory/4.5.5": {
         "type": "package",
         "compile": {
           "ref/netcoreapp2.1/_._": {}
@@ -990,6 +1175,67 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "Microsoft.AI.DirectML/1.15.1": {
+      "sha512": "j1zJaXb6nKpYFaHLTH/jA5xr0Am1TeRUadkve63Gs1Mkg6xZiwDbXvPg4qMDRcpEZmYKzwHax53duheEz3nzAg==",
+      "type": "package",
+      "path": "microsoft.ai.directml/1.15.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE-CODE.txt",
+        "LICENSE.txt",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "bin/arm-win/DirectML.Debug.dll",
+        "bin/arm-win/DirectML.Debug.pdb",
+        "bin/arm-win/DirectML.dll",
+        "bin/arm-win/DirectML.lib",
+        "bin/arm-win/DirectML.pdb",
+        "bin/arm64-win/DirectML.Debug.dll",
+        "bin/arm64-win/DirectML.Debug.pdb",
+        "bin/arm64-win/DirectML.dll",
+        "bin/arm64-win/DirectML.lib",
+        "bin/arm64-win/DirectML.pdb",
+        "bin/arm64ec-win/DirectML.Debug.dll",
+        "bin/arm64ec-win/DirectML.Debug.pdb",
+        "bin/arm64ec-win/DirectML.dll",
+        "bin/arm64ec-win/DirectML.lib",
+        "bin/arm64ec-win/DirectML.pdb",
+        "bin/x64-linux/libdirectml.so",
+        "bin/x64-win/DirectML.Debug.dll",
+        "bin/x64-win/DirectML.Debug.pdb",
+        "bin/x64-win/DirectML.dll",
+        "bin/x64-win/DirectML.lib",
+        "bin/x64-win/DirectML.pdb",
+        "bin/x64-xbox-scarlett-230307/DirectML.Debug.dll",
+        "bin/x64-xbox-scarlett-230307/DirectML.Debug.pdb",
+        "bin/x64-xbox-scarlett-230307/DirectML.dll",
+        "bin/x64-xbox-scarlett-230307/DirectML.lib",
+        "bin/x64-xbox-scarlett-230307/DirectML.pdb",
+        "bin/x64-xbox-scarlett-230603/DirectML.Debug.dll",
+        "bin/x64-xbox-scarlett-230603/DirectML.Debug.pdb",
+        "bin/x64-xbox-scarlett-230603/DirectML.dll",
+        "bin/x64-xbox-scarlett-230603/DirectML.lib",
+        "bin/x64-xbox-scarlett-230603/DirectML.pdb",
+        "bin/x64-xbox-scarlett-231000/DirectML.Debug.dll",
+        "bin/x64-xbox-scarlett-231000/DirectML.Debug.pdb",
+        "bin/x64-xbox-scarlett-231000/DirectML.dll",
+        "bin/x64-xbox-scarlett-231000/DirectML.lib",
+        "bin/x64-xbox-scarlett-231000/DirectML.pdb",
+        "bin/x86-win/DirectML.Debug.dll",
+        "bin/x86-win/DirectML.Debug.pdb",
+        "bin/x86-win/DirectML.dll",
+        "bin/x86-win/DirectML.lib",
+        "bin/x86-win/DirectML.pdb",
+        "build/Microsoft.AI.DirectML.Rules.Project.xml",
+        "build/Microsoft.AI.DirectML.props",
+        "build/Microsoft.AI.DirectML.targets",
+        "include/DirectML.h",
+        "include/DirectMLConfig.h",
+        "microsoft.ai.directml.1.15.1.nupkg.sha512",
+        "microsoft.ai.directml.nuspec"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
@@ -1935,6 +2181,143 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Microsoft.ML.OnnxRuntime.DirectML/1.19.2": {
+      "sha512": "tNSSwJoPiJy92mdP6Y2Kb3JyEwxqlzfYkhbtT9QrU2XMGCyXA+Rbc07Y892rTtYBK/8btE3zWCZ3VdEYlHrtfA==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.directml/1.19.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "build/native/Microsoft.ML.OnnxRuntime.DirectML.props",
+        "build/native/Microsoft.ML.OnnxRuntime.DirectML.targets",
+        "build/native/include/cpu_provider_factory.h",
+        "build/native/include/dml_provider_factory.h",
+        "build/native/include/onnxruntime_c_api.h",
+        "build/native/include/onnxruntime_cxx_api.h",
+        "build/native/include/onnxruntime_cxx_inline.h",
+        "build/native/include/onnxruntime_float16.h",
+        "build/native/include/onnxruntime_lite_custom_op.h",
+        "build/native/include/onnxruntime_run_options_config_keys.h",
+        "build/native/include/onnxruntime_session_options_config_keys.h",
+        "build/native/include/provider_options.h",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.DirectML.props",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.DirectML.targets",
+        "build/netstandard2.1/Microsoft.ML.OnnxRuntime.DirectML.props",
+        "build/netstandard2.1/Microsoft.ML.OnnxRuntime.DirectML.targets",
+        "microsoft.ml.onnxruntime.directml.1.19.2.nupkg.sha512",
+        "microsoft.ml.onnxruntime.directml.nuspec",
+        "runtimes/win-arm64/native/onnxruntime.dll",
+        "runtimes/win-arm64/native/onnxruntime.lib",
+        "runtimes/win-x64/native/onnxruntime.dll",
+        "runtimes/win-x64/native/onnxruntime.lib",
+        "runtimes/win-x86/native/onnxruntime.dll",
+        "runtimes/win-x86/native/onnxruntime.lib"
+      ]
+    },
+    "Microsoft.ML.OnnxRuntime.Extensions/0.13.0": {
+      "sha512": "J99sOl+oWYVPh4T5D1JZgdUvTcX2bOQtKSG1sOm89UnVLDGtG1E2VHz2oHFJTaGyM8C8PrKnK9McYOll+qJduw==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.extensions/0.13.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "ORT_icon_for_light_bg.png",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "build/monoandroid11.0/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/net6.0-android31.0/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/net6.0-ios15.4/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/net6.0-maccatalyst14.0/_._",
+        "build/net6.0-macos12.3/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/netstandard1.1/Microsoft.ML.OnnxRuntime.Extensions.props",
+        "build/netstandard1.1/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Extensions.props",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "build/xamarinios10/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "buildTransitive/monoandroid11.0/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "buildTransitive/net6.0-android31.0/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "buildTransitive/net6.0-ios15.4/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "buildTransitive/net6.0-maccatalyst14.0/_._",
+        "buildTransitive/net6.0-macos12.3/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "buildTransitive/xamarinios10/Microsoft.ML.OnnxRuntime.Extensions.targets",
+        "microsoft.ml.onnxruntime.extensions.0.13.0.nupkg.sha512",
+        "microsoft.ml.onnxruntime.extensions.nuspec",
+        "runtimes/android/native/onnxruntime-extensions.aar",
+        "runtimes/ios/native/onnxruntime_extensions.xcframework.zip",
+        "runtimes/linux-arm64/native/libortextensions.so",
+        "runtimes/linux-x64/native/libortextensions.so",
+        "runtimes/osx.10.14-arm64/native/libortextensions.dylib",
+        "runtimes/osx.10.14-x64/native/libortextensions.dylib",
+        "runtimes/win-arm64/native/ortextensions.dll",
+        "runtimes/win-x64/native/ortextensions.dll",
+        "runtimes/win-x86/native/ortextensions.dll"
+      ]
+    },
+    "Microsoft.ML.OnnxRuntime.Managed/1.19.2": {
+      "sha512": "4oNu7/L1ar3PmXNvAnary0/MbyqNkKDmisrG54QVbFoSuW1GNw1CcWDBrlYHbafo41p4/cnVQ3lF/IHuSm8quQ==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.managed/1.19.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "ThirdPartyNotices.txt",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Managed.targets",
+        "lib/net6.0/Microsoft.ML.OnnxRuntime.dll",
+        "lib/net6.0/Microsoft.ML.OnnxRuntime.pdb",
+        "lib/net8.0-android34.0/Microsoft.ML.OnnxRuntime.dll",
+        "lib/net8.0-android34.0/Microsoft.ML.OnnxRuntime.pdb",
+        "lib/net8.0-android34.0/Microsoft.ML.OnnxRuntime.xml",
+        "lib/net8.0-ios17.5/Microsoft.ML.OnnxRuntime.dll",
+        "lib/net8.0-ios17.5/Microsoft.ML.OnnxRuntime.pdb",
+        "lib/net8.0-maccatalyst17.5/Microsoft.ML.OnnxRuntime.dll",
+        "lib/net8.0-maccatalyst17.5/Microsoft.ML.OnnxRuntime.pdb",
+        "lib/netstandard2.0/Microsoft.ML.OnnxRuntime.dll",
+        "lib/netstandard2.0/Microsoft.ML.OnnxRuntime.pdb",
+        "microsoft.ml.onnxruntime.managed.1.19.2.nupkg.sha512",
+        "microsoft.ml.onnxruntime.managed.nuspec"
+      ]
+    },
+    "Microsoft.Win32.SystemEvents/9.0.15": {
+      "sha512": "N+h0LVGJXZk6ICopqk5rFZo9g7V3KZLty8TPAzM2AvYuigM7H0oI/4eWbjhXZD/w27M/XKlRvqReKP0Ng5u9fQ==",
+      "type": "package",
+      "path": "microsoft.win32.systemevents/9.0.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Win32.SystemEvents.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Win32.SystemEvents.targets",
+        "lib/net462/Microsoft.Win32.SystemEvents.dll",
+        "lib/net462/Microsoft.Win32.SystemEvents.xml",
+        "lib/net8.0/Microsoft.Win32.SystemEvents.dll",
+        "lib/net8.0/Microsoft.Win32.SystemEvents.xml",
+        "lib/net9.0/Microsoft.Win32.SystemEvents.dll",
+        "lib/net9.0/Microsoft.Win32.SystemEvents.xml",
+        "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll",
+        "lib/netstandard2.0/Microsoft.Win32.SystemEvents.xml",
+        "microsoft.win32.systemevents.9.0.15.nupkg.sha512",
+        "microsoft.win32.systemevents.nuspec",
+        "runtimes/win/lib/net8.0/Microsoft.Win32.SystemEvents.dll",
+        "runtimes/win/lib/net8.0/Microsoft.Win32.SystemEvents.xml",
+        "runtimes/win/lib/net9.0/Microsoft.Win32.SystemEvents.dll",
+        "runtimes/win/lib/net9.0/Microsoft.Win32.SystemEvents.xml",
+        "useSharedDesignerContext.txt"
+      ]
+    },
     "Mono.TextTemplating/2.2.1": {
       "sha512": "KZYeKBET/2Z0gY1WlTAK7+RHTl7GSbtvTLDXEZZojUdAPqpQNDL6tHv7VUpqfX5VEOh+uRGKaZXkuD253nEOBQ==",
       "type": "package",
@@ -2037,25 +2420,32 @@
         "sqlitepclraw.provider.e_sqlite3.nuspec"
       ]
     },
-    "System.CodeDom/4.4.0": {
-      "sha512": "2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA==",
+    "System.CodeDom/9.0.15": {
+      "sha512": "Buo+/rdInTpAymgBV+8aLDN0r3dwzcqS+gbzCUt9onOrE+YZ0y6zFhKgo8WFnlsyZRftAw6pXfZU7j37Tyrdlg==",
       "type": "package",
-      "path": "system.codedom/4.4.0",
+      "path": "system.codedom/9.0.15",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
-        "lib/net461/System.CodeDom.dll",
+        "buildTransitive/net461/System.CodeDom.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.CodeDom.targets",
+        "lib/net462/System.CodeDom.dll",
+        "lib/net462/System.CodeDom.xml",
+        "lib/net8.0/System.CodeDom.dll",
+        "lib/net8.0/System.CodeDom.xml",
+        "lib/net9.0/System.CodeDom.dll",
+        "lib/net9.0/System.CodeDom.xml",
         "lib/netstandard2.0/System.CodeDom.dll",
-        "ref/net461/System.CodeDom.dll",
-        "ref/net461/System.CodeDom.xml",
-        "ref/netstandard2.0/System.CodeDom.dll",
-        "ref/netstandard2.0/System.CodeDom.xml",
-        "system.codedom.4.4.0.nupkg.sha512",
+        "lib/netstandard2.0/System.CodeDom.xml",
+        "system.codedom.9.0.15.nupkg.sha512",
         "system.codedom.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
+        "useSharedDesignerContext.txt"
       ]
     },
     "System.Collections.Immutable/6.0.0": {
@@ -2213,6 +2603,48 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "System.Drawing.Common/9.0.15": {
+      "sha512": "c4DHJGKyF0wsSm3+jJN6lh3ZQDJItv6bpNJIoNfV8MPK12T8EgBSTQgjI3ItPtuztik/WKCQNR4EtaPmGiUoGQ==",
+      "type": "package",
+      "path": "system.drawing.common/9.0.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/System.Drawing.Common.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Drawing.Common.targets",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net462/System.Drawing.Common.dll",
+        "lib/net462/System.Drawing.Common.pdb",
+        "lib/net462/System.Drawing.Common.xml",
+        "lib/net8.0/System.Drawing.Common.dll",
+        "lib/net8.0/System.Drawing.Common.pdb",
+        "lib/net8.0/System.Drawing.Common.xml",
+        "lib/net8.0/System.Private.Windows.Core.dll",
+        "lib/net8.0/System.Private.Windows.Core.xml",
+        "lib/net9.0/System.Drawing.Common.dll",
+        "lib/net9.0/System.Drawing.Common.pdb",
+        "lib/net9.0/System.Drawing.Common.xml",
+        "lib/net9.0/System.Private.Windows.Core.dll",
+        "lib/net9.0/System.Private.Windows.Core.xml",
+        "lib/netstandard2.0/System.Drawing.Common.dll",
+        "lib/netstandard2.0/System.Drawing.Common.pdb",
+        "lib/netstandard2.0/System.Drawing.Common.xml",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "system.drawing.common.9.0.15.nupkg.sha512",
+        "system.drawing.common.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
     "System.IO.Pipelines/6.0.3": {
       "sha512": "ryTgF+iFkpGZY1vRQhfCzX0xTdlV3pyaTTqRu2ETbEv+HlV7O6y7hyQURnghNIXvctl5DuZ//Dpks6HdL/Txgw==",
       "type": "package",
@@ -2238,22 +2670,53 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Memory/4.5.3": {
-      "sha512": "3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA==",
+    "System.Management/9.0.15": {
+      "sha512": "H5tNq2Tn3tmyRPluFj4PC8VYaKRA6TofB0aANtcWpYtuLibrxabt3wnCq+HSs7ixIcx9NAf1MMuozuA3shARjw==",
       "type": "package",
-      "path": "system.memory/4.5.3",
+      "path": "system.management/9.0.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Management.targets",
+        "lib/net462/_._",
+        "lib/net8.0/System.Management.dll",
+        "lib/net8.0/System.Management.xml",
+        "lib/net9.0/System.Management.dll",
+        "lib/net9.0/System.Management.xml",
+        "lib/netstandard2.0/System.Management.dll",
+        "lib/netstandard2.0/System.Management.xml",
+        "runtimes/win/lib/net8.0/System.Management.dll",
+        "runtimes/win/lib/net8.0/System.Management.xml",
+        "runtimes/win/lib/net9.0/System.Management.dll",
+        "runtimes/win/lib/net9.0/System.Management.xml",
+        "system.management.9.0.15.nupkg.sha512",
+        "system.management.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Memory/4.5.5": {
+      "sha512": "XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "type": "package",
+      "path": "system.memory/4.5.5",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Memory.dll",
+        "lib/net461/System.Memory.xml",
         "lib/netcoreapp2.1/_._",
         "lib/netstandard1.1/System.Memory.dll",
         "lib/netstandard1.1/System.Memory.xml",
         "lib/netstandard2.0/System.Memory.dll",
         "lib/netstandard2.0/System.Memory.xml",
         "ref/netcoreapp2.1/_._",
-        "system.memory.4.5.3.nupkg.sha512",
+        "system.memory.4.5.5.nupkg.sha512",
         "system.memory.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
@@ -2375,9 +2838,13 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net9.0": [
+    "net9.0-windows10.0.19041.0": [
       "Microsoft.EntityFrameworkCore.Design >= 8.*",
-      "Microsoft.EntityFrameworkCore.Sqlite >= 8.*"
+      "Microsoft.EntityFrameworkCore.Sqlite >= 8.*",
+      "Microsoft.ML.OnnxRuntime.DirectML >= 1.19.*",
+      "Microsoft.ML.OnnxRuntime.Extensions >= 0.13.*",
+      "System.Drawing.Common >= 9.*",
+      "System.Management >= 9.*"
     ]
   },
   "packageFolders": {
@@ -2402,7 +2869,7 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net9.0"
+        "net9.0-windows10.0.19041.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -2410,9 +2877,9 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net9.0": {
-          "framework": "net9.0",
-          "targetAlias": "net9.0",
+        "net9.0-windows10.0.19041.0": {
+          "framework": "net9.0-windows10.0.19041",
+          "targetAlias": "net9.0-windows10.0.19041.0",
           "projectReferences": {}
         }
       },
@@ -2429,9 +2896,9 @@
       "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
-      "net9.0": {
-        "framework": "net9.0",
-        "targetAlias": "net9.0",
+      "net9.0-windows10.0.19041.0": {
+        "framework": "net9.0-windows10.0.19041",
+        "targetAlias": "net9.0-windows10.0.19041.0",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -2442,6 +2909,22 @@
           "Microsoft.EntityFrameworkCore.Sqlite": {
             "target": "Package",
             "version": "[8.*, )"
+          },
+          "Microsoft.ML.OnnxRuntime.DirectML": {
+            "target": "Package",
+            "version": "[1.19.*, )"
+          },
+          "Microsoft.ML.OnnxRuntime.Extensions": {
+            "target": "Package",
+            "version": "[0.13.*, )"
+          },
+          "System.Drawing.Common": {
+            "target": "Package",
+            "version": "[9.*, )"
+          },
+          "System.Management": {
+            "target": "Package",
+            "version": "[9.*, )"
           }
         },
         "imports": [
@@ -2465,12 +2948,19 @@
             "version": "[9.0.14, 9.0.14]"
           },
           {
+            "name": "Microsoft.Windows.SDK.NET.Ref",
+            "version": "[10.0.19041.57, 10.0.19041.57]"
+          },
+          {
             "name": "Microsoft.WindowsDesktop.App.Ref",
             "version": "[9.0.14, 9.0.14]"
           }
         ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.Windows.SDK.NET.Ref.Windows": {
             "privateAssets": "all"
           }
         },
