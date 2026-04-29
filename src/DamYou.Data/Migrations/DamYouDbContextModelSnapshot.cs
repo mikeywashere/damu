@@ -15,7 +15,7 @@ namespace DamYou.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.26");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
 
             modelBuilder.Entity("DamYou.Data.Entities.Photo", b =>
                 {
@@ -49,6 +49,9 @@ namespace DamYou.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("PhotoFolderId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -68,6 +71,9 @@ namespace DamYou.Data.Migrations
 
                     b.HasIndex("FilePath")
                         .IsUnique();
+
+                    b.HasIndex("PhotoFolderId")
+                        .HasDatabaseName("IX_Photos_PhotoFolderId");
 
                     b.HasIndex("WatchedFolderId")
                         .HasDatabaseName("IX_Photos_WatchedFolderId");
@@ -176,6 +182,30 @@ namespace DamYou.Data.Migrations
                     b.ToTable("PhotoEmbeddings");
                 });
 
+            modelBuilder.Entity("DamYou.Data.Entities.PhotoFolder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FolderPath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FolderPath")
+                        .IsUnique();
+
+                    b.ToTable("PhotoFolders");
+                });
+
             modelBuilder.Entity("DamYou.Data.Entities.PhotoOcrText", b =>
                 {
                     b.Property<int>("Id")
@@ -272,11 +302,18 @@ namespace DamYou.Data.Migrations
 
             modelBuilder.Entity("DamYou.Data.Entities.Photo", b =>
                 {
+                    b.HasOne("DamYou.Data.Entities.PhotoFolder", "PhotoFolder")
+                        .WithMany()
+                        .HasForeignKey("PhotoFolderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("DamYou.Data.Entities.WatchedFolder", "WatchedFolder")
                         .WithMany()
                         .HasForeignKey("WatchedFolderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PhotoFolder");
 
                     b.Navigation("WatchedFolder");
                 });

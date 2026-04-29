@@ -9,6 +9,7 @@ public sealed class DamYouDbContext : DbContext
     public DamYouDbContext(DbContextOptions<DamYouDbContext> options) : base(options) { }
 
     public DbSet<WatchedFolder> WatchedFolders => Set<WatchedFolder>();
+    public DbSet<PhotoFolder> PhotoFolders => Set<PhotoFolder>();
     public DbSet<Photo> Photos => Set<Photo>();
     public DbSet<PipelineTask> PipelineTasks => Set<PipelineTask>();
     public DbSet<PhotoEmbedding> PhotoEmbeddings => Set<PhotoEmbedding>();
@@ -26,11 +27,21 @@ public sealed class DamYouDbContext : DbContext
             e.Property(x => x.DateAdded).IsRequired();
         });
 
+        modelBuilder.Entity<PhotoFolder>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.FolderPath).IsUnique();
+            e.Property(x => x.FolderPath).IsRequired();
+            e.Property(x => x.CreatedAt).IsRequired();
+            e.Property(x => x.UpdatedAt).IsRequired();
+        });
+
         modelBuilder.Entity<Photo>(e =>
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.FilePath).IsUnique();
             e.HasIndex(x => x.WatchedFolderId).HasDatabaseName("IX_Photos_WatchedFolderId");
+            e.HasIndex(x => x.PhotoFolderId).HasDatabaseName("IX_Photos_PhotoFolderId");
             e.HasIndex(x => x.DateTaken).HasDatabaseName("IX_Photos_DateTaken");
             e.HasIndex(x => x.FileHash).HasDatabaseName("IX_Photos_FileHash");
             e.Property(x => x.FileName).IsRequired();
@@ -39,6 +50,11 @@ public sealed class DamYouDbContext : DbContext
              .WithMany()
              .HasForeignKey(x => x.WatchedFolderId)
              .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.PhotoFolder)
+             .WithMany()
+             .HasForeignKey(x => x.PhotoFolderId)
+             .OnDelete(DeleteBehavior.Cascade)
+             .IsRequired(false);
         });
 
         modelBuilder.Entity<PipelineTask>(e =>

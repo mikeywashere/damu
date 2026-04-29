@@ -70,6 +70,7 @@ public sealed class LibraryScanService : ILibraryScanService
                             var photo = new Photo
                             {
                                 WatchedFolderId = folder.Id,
+                                // INTEGRATION POINT: Lambert will set PhotoFolderId based on library folder mapping
                                 FileName = Path.GetFileName(filePath),
                                 FilePath = filePath,
                                 FileSizeBytes = info.Length,

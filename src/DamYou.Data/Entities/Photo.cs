@@ -5,6 +5,8 @@ public sealed class Photo
     public int Id { get; set; }
     public int WatchedFolderId { get; set; }
     public WatchedFolder WatchedFolder { get; set; } = null!;
+    public int? PhotoFolderId { get; set; }
+    public PhotoFolder? PhotoFolder { get; set; }
     public required string FileName { get; set; }
     public required string FilePath { get; set; }
     public long FileSizeBytes { get; set; }

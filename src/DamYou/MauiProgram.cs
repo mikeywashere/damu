@@ -37,6 +37,7 @@ public static class MauiProgram
         // Repositories
         builder.Services.AddScoped<IFolderRepository, FolderRepository>();
         builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
+        builder.Services.AddScoped<IPhotoFolderRepository, PhotoFolderRepository>();
 
         // Import
         builder.Services.AddScoped<IPhotoImportService, PhotoImportService>();
@@ -64,11 +65,13 @@ public static class MauiProgram
         // ViewModels
         builder.Services.AddTransient<LibrarySetupViewModel>();
         builder.Services.AddTransient<LibraryViewModel>();
+        builder.Services.AddTransient<ManageFoldersViewModel>();
         builder.Services.AddTransient<TasksViewModel>();
 
         // Views
         builder.Services.AddTransient<LibrarySetupView>();
         builder.Services.AddTransient<LibraryView>();
+        builder.Services.AddTransient<ManageFoldersModal>();
         builder.Services.AddTransient<TasksView>();
 
         // App

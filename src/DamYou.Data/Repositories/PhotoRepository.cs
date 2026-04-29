@@ -15,6 +15,9 @@ public sealed class PhotoRepository : IPhotoRepository
     public Task<int> CountAsync(CancellationToken ct = default) =>
         _db.Photos.CountAsync(ct);
 
+    public Task<int> CountByFolderAsync(int folderId, CancellationToken ct = default) =>
+        _db.Photos.Where(p => p.WatchedFolderId == folderId).CountAsync(ct);
+
     public async Task AddPhotosAsync(IEnumerable<Photo> photos, CancellationToken ct = default)
     {
         await _db.Photos.AddRangeAsync(photos, ct);

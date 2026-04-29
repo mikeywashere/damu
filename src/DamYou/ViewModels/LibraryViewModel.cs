@@ -58,6 +58,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private int _photoCount;
 
+    [ObservableProperty]
+    private bool _showFolderModal;
+
     public string ScanProgressText =>
         IsScanning && ScanDiscovered == 0
             ? "Scanning…"
@@ -76,12 +79,14 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Called when the view loads to fetch the first batch of photos.
+    /// Called when the view loads to fetch the first batch of photos and check if modal should show.
     /// </summary>
     [RelayCommand]
     private async Task InitializeAsync(CancellationToken ct)
     {
         await LoadPhotosAsync(ct);
+        var totalPhotos = await _photoRepository.CountAsync(ct);
+        ShowFolderModal = totalPhotos == 0;
     }
 
     /// <summary>
@@ -233,6 +238,14 @@ public sealed partial class LibraryViewModel : ObservableObject
         var tasksView = _services.GetRequiredService<TasksView>();
         if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
             await nav.PushAsync(tasksView);
+    }
+
+    [RelayCommand]
+    private async Task ManageFoldersAsync()
+    {
+        var manageFoldersModal = _services.GetRequiredService<ManageFoldersModal>();
+        if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
+            await nav.PushAsync(manageFoldersModal);
     }
 
     [RelayCommand]

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DamYou.ViewModels"
+             x:Class="DamYou.Views.ManageFoldersModal"
+             x:DataType="vm:ManageFoldersViewModel"
+             Title="Manage Library Folders"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             Loaded="OnPageLoaded">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12" RowSpacing="12">
+
+        <!-- Title -->
+        <Label Grid.Row="0"
+               Text="Manage Library Folders"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Start" />
+
+        <!-- Folders List -->
+        <VerticalStackLayout Grid.Row="1" Spacing="8">
+            <!-- Empty State -->
+            <VerticalStackLayout HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding Folders.Count, Converter={StaticResource IntToBoolConverter}, ConverterParameter=invert}">
+                <Label Text="📁"
+                       FontSize="48"
+                       HorizontalOptions="Center" />
+                <Label Text="No folders yet"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       Opacity="0.6"
+                       Margin="0,12,0,0" />
+                <Label Text="Add a folder to start scanning for photos."
+                       FontSize="12"
+                       HorizontalOptions="Center"
+                       Opacity="0.5" />
+            </VerticalStackLayout>
+
+            <!-- Folders Table Header -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto,Auto"
+                  ColumnSpacing="12"
+                  IsVisible="{Binding Folders.Count, Converter={StaticResource IntToBoolConverter}}"
+                  Padding="8"
+                  BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2D2D2D}">
+                <Label Grid.Column="0" Text="Folder Path" FontSize="12" FontAttributes="Bold" />
+                <Label Grid.Column="1" Text="Photos" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="2" Text="" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            </Grid>
+
+            <!-- Folders ScrollView -->
+            <ScrollView IsVisible="{Binding Folders.Count, Converter={StaticResource IntToBoolConverter}}">
+                <VerticalStackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Folders}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PhotoFolderViewModel">
+                            <Border StrokeThickness="0,0,0,1"
+                                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}}"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="*,Auto,Auto"
+                                      ColumnSpacing="12"
+                                      Padding="8">
+                                <!-- Folder Path (truncated) -->
+                                <Label Grid.Column="0"
+                                       Text="{Binding Path}"
+                                       FontSize="12"
+                                       LineBreakMode="MiddleTruncation"
+                                       VerticalOptions="Center" />
+                                <!-- Photo Count -->
+                                <Label Grid.Column="1"
+                                       Text="{Binding PhotoCount}"
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalOptions="Center"
+                                       WidthRequest="40" />
+                                <!-- Delete Button -->
+                                <Button Grid.Column="2"
+                                        Text="🗑️"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteFolderCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        Padding="4"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        FontSize="16" />
+                            </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
+
+        <!-- Action Buttons -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="12" HorizontalOptions="FillAndExpand">
+            <Button Text="➕ Add Folder"
+                    Command="{Binding AddFolderCommand}"
+                    Padding="12"
+                    FontSize="12"
+                    HorizontalOptions="FillAndExpand" />
+            <Button Text="✓ Done"
+                    Clicked="OnDoneClicked"
+                    Padding="12"
+                    FontSize="12"
+                    HorizontalOptions="FillAndExpand" />
+        </HorizontalStackLayout>
+
+    </Grid>
+</ContentPage>

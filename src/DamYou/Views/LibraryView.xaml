@@ -11,12 +11,20 @@
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="12">
 
         <!-- Header -->
-        <VerticalStackLayout Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <Label Text="📷 Your Library"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Start" />
-        </VerticalStackLayout>
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,0,0,12">
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label Text="📷 Your Library"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Start" />
+            </VerticalStackLayout>
+            <Button Grid.Column="1"
+                    Text="📁 Manage Folders"
+                    Command="{Binding ManageFoldersCommand}"
+                    Padding="12"
+                    FontSize="12"
+                    VerticalOptions="Center" />
+        </Grid>
 
         <!-- Scan progress (visible only while scanning) -->
         <VerticalStackLayout Grid.Row="1"
