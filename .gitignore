@@ -297,4 +297,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 /.vs
-/.vs
+.vs/
