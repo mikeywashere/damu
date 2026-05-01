@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DamYou.Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe85ddc90ffb0739bcbdfbc6856a65be66b3bfad")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61a32f35355981cd61427b52aa9c524ca7704e4a")]
 [assembly: System.Reflection.AssemblyProductAttribute("DamYou.Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DamYou.Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

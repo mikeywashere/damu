@@ -1,18 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.*">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Drawing.Common" Version="9.*" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.19.*" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime.Extensions" Version="0.13.*" />
-    <PackageReference Include="System.Management" Version="9.*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>analyzers; build</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.25.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.0.20" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.ML" Version="2.0.300">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>compile; build</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Composition" Version="10.0.7" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Extensions" Version="0.14.0" />
+    <PackageReference Include="System.Management" Version="10.0.7" />
   </ItemGroup>
 </Project>

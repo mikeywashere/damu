@@ -104,7 +104,7 @@ public sealed partial class ManageFoldersViewModel : ObservableObject
             if (mainPage == null)
                 return;
 
-            bool confirmed = await mainPage.DisplayAlert(
+            bool confirmed = await mainPage.DisplayAlertAsync(
                 "Remove Folder",
                 $"Remove folder '{folder.Path}' and all its photos?",
                 "Remove",

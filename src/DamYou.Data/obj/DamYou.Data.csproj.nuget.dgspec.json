@@ -53,31 +53,61 @@
           "framework": "net10.0-windows10.0.19041",
           "targetAlias": "net10.0-windows10.0.19041.0",
           "dependencies": {
+            "Microsoft.CodeAnalysis.Analyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.3.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[5.3.0, )"
+            },
+            "Microsoft.CodeAnalysis.Workspaces.MSBuild": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.3.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.*, )"
+              "version": "[10.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
-              "version": "[9.*, )"
-            },
-            "Microsoft.ML.OnnxRuntime.DirectML": {
-              "target": "Package",
-              "version": "[1.19.*, )"
+              "version": "[10.0.7, )"
             },
             "Microsoft.ML.OnnxRuntime.Extensions": {
               "target": "Package",
-              "version": "[0.13.*, )"
+              "version": "[0.14.0, )"
+            },
+            "Microsoft.ML.OnnxRuntime.Managed": {
+              "target": "Package",
+              "version": "[1.25.1, )"
+            },
+            "Microsoft.WindowsAppSDK.Foundation": {
+              "target": "Package",
+              "version": "[2.0.20, )"
+            },
+            "Microsoft.WindowsAppSDK.ML": {
+              "include": "Compile, Build",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.300, )"
+            },
+            "System.Composition": {
+              "target": "Package",
+              "version": "[10.0.7, )"
             },
             "System.Drawing.Common": {
               "target": "Package",
-              "version": "[9.*, )"
+              "version": "[10.0.7, )"
             },
             "System.Management": {
               "target": "Package",
-              "version": "[9.*, )"
+              "version": "[10.0.7, )"
             }
           },
           "imports": [

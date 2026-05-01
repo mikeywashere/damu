@@ -1,0 +1,3 @@
+C:\src\mikeywashere\dam-you\src\DamYou.Data\DamYou.Data.csproj;neutral
+C:\src\mikeywashere\dam-you\src\DamYou.Data\DamYou.Data.csproj;neutral
+C:\src\mikeywashere\dam-you\src\DamYou\DamYou.csproj;x64

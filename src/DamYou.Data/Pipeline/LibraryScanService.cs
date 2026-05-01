@@ -1,5 +1,6 @@
 using DamYou.Data.Entities;
 using DamYou.Data.Repositories;
+using DamYou.Data.Analysis;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -17,12 +18,18 @@ public sealed class LibraryScanService : ILibraryScanService
     private readonly DamYouDbContext _db;
     private readonly IFolderRepository _folderRepository;
     private readonly IPipelineTaskRepository _taskRepository;
+    private readonly IPipelineProcessorService _pipelineProcessor;
 
-    public LibraryScanService(DamYouDbContext db, IFolderRepository folderRepository, IPipelineTaskRepository taskRepository)
+    public LibraryScanService(
+        DamYouDbContext db,
+        IFolderRepository folderRepository,
+        IPipelineTaskRepository taskRepository,
+        IPipelineProcessorService pipelineProcessor)
     {
         _db = db;
         _folderRepository = folderRepository;
         _taskRepository = taskRepository;
+        _pipelineProcessor = pipelineProcessor;
     }
 
     public async Task ScanAsync(IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
@@ -103,6 +110,9 @@ public sealed class LibraryScanService : ILibraryScanService
                 }
             }
 
+            // After scan completes, trigger pipeline processing for unprocessed photos
+            await EnqueuePhotosForAnalysisAsync(ct);
+
             scanTask.Status = PipelineTaskStatus.Completed;
             scanTask.CompletedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync(ct);
@@ -115,6 +125,18 @@ public sealed class LibraryScanService : ILibraryScanService
             await _db.SaveChangesAsync(CancellationToken.None);
             throw;
         }
+    }
+
+    public async Task EnqueuePhotosForAnalysisAsync(CancellationToken ct = default)
+    {
+        var unprocessedPhotos = await _db.Photos
+            .Where(p => p.Status == ProcessingStatus.Unprocessed)
+            .CountAsync(ct);
+
+        if (unprocessedPhotos == 0)
+            return;
+
+        await _pipelineProcessor.ProcessQueueAsync(ct: ct);
     }
 
     private static async Task<string> ComputeSha256Async(string filePath, CancellationToken ct)

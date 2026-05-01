@@ -2,8 +2,10 @@ using DamYou.Data;
 using DamYou.Data.Entities;
 using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
+using DamYou.Data.Analysis;
 using DamYou.Tests.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace DamYou.Tests.Pipeline;
 
@@ -12,6 +14,7 @@ public sealed class LibraryScanServiceTests : IDisposable
     private readonly DamYouDbContext _db;
     private readonly FolderRepository _folderRepo;
     private readonly PipelineTaskRepository _taskRepo;
+    private readonly Mock<IPipelineProcessorService> _pipelineProcessorMock;
     private readonly LibraryScanService _sut;
     private readonly SyntheticPhotoFixture _fixture;
 
@@ -23,7 +26,11 @@ public sealed class LibraryScanServiceTests : IDisposable
         _db = new DamYouDbContext(options);
         _folderRepo = new FolderRepository(_db);
         _taskRepo = new PipelineTaskRepository(_db);
-        _sut = new LibraryScanService(_db, _folderRepo, _taskRepo);
+        _pipelineProcessorMock = new Mock<IPipelineProcessorService>();
+        _pipelineProcessorMock
+            .Setup(p => p.ProcessQueueAsync(It.IsAny<IProgress<AnalysisProgress>>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _sut = new LibraryScanService(_db, _folderRepo, _taskRepo, _pipelineProcessorMock.Object);
         _fixture = new SyntheticPhotoFixture();
     }
 
