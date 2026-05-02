@@ -71,12 +71,20 @@ public static class MauiProgram
         builder.Services.AddTransient<LibraryViewModel>();
         builder.Services.AddTransient<ManageFoldersViewModel>();
         builder.Services.AddTransient<TasksViewModel>();
+        builder.Services.AddSingleton<ProcessingStateViewModel>(); // Shared state for UI + worker
+
+        // Background processing
+        builder.Services.AddLogging(c => c.AddDebug());
+        builder.Services.AddSingleton<ProcessingHostedService>();
+        builder.Services.AddSingleton<IProcessingWorker>(sp => sp.GetRequiredService<ProcessingHostedService>());
+        builder.Services.AddHostedService<ProcessingHostedService>(sp => sp.GetRequiredService<ProcessingHostedService>());
 
         // Views
-        builder.Services.AddTransient<LibrarySetupView>();
+        builder.Services.AddTransient<LibrarySetupModal>();
         builder.Services.AddTransient<LibraryView>();
         builder.Services.AddTransient<ManageFoldersModal>();
         builder.Services.AddTransient<TasksView>();
+        builder.Services.AddSingleton<StatusBar>(); // Status bar (singleton for global state binding)
 
         // App
         builder.Services.AddSingleton<App>();

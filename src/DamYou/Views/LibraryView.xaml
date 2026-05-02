@@ -2,13 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DamYou.ViewModels"
+             xmlns:views="clr-namespace:DamYou.Views"
+             xmlns:local="clr-namespace:DamYou"
              x:Class="DamYou.Views.LibraryView"
              x:DataType="vm:LibraryViewModel"
              Title="Your Library"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              Loaded="OnPageLoaded">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" Padding="12">
 
         <!-- Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,0,0,12">
@@ -50,8 +52,14 @@
                                HorizontalOptions="Center" />
         </VerticalStackLayout>
 
+        <!-- Status Bar (processing progress) -->
+        <views:StatusBar Grid.Row="2"
+                         BindingContext="{x:Static local:App.ProcessingState}"
+                         Margin="0,0,0,12"
+                         IsVisible="True" />
+
         <!-- Search Bar and Controls -->
-        <Grid Grid.Row="2"
+        <Grid Grid.Row="3"
               ColumnDefinitions="*,Auto"
               RowDefinitions="Auto,Auto"
               Margin="0,0,0,12">
@@ -110,7 +118,7 @@
         </Grid>
 
         <!-- Grid View -->
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
             <!-- Empty State -->
             <VerticalStackLayout HorizontalOptions="Center"
                                 VerticalOptions="Center"
@@ -141,7 +149,7 @@
         </Grid>
 
         <!-- Loading Indicator -->
-        <VerticalStackLayout Grid.Row="3"
+        <VerticalStackLayout Grid.Row="4"
                             IsVisible="{Binding IsLoadingMore}"
                             HorizontalOptions="Center"
                             VerticalOptions="End"
@@ -151,7 +159,7 @@
         </VerticalStackLayout>
 
         <!-- Footer: action buttons + stats -->
-        <Grid Grid.Row="4" Margin="0,12,0,0" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="5" Margin="0,12,0,0" ColumnDefinitions="*,Auto">
 
             <!-- Photo count and queue depth -->
             <HorizontalStackLayout Grid.Column="0" Spacing="12" VerticalOptions="Center">

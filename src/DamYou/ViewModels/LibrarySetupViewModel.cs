@@ -12,6 +12,7 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
     private readonly IFolderRepository _folderRepository;
     private readonly IFolderPickerService _folderPickerService;
     private readonly IPhotoImportService _importService;
+    private readonly IProcessingWorker _processingWorker;
 
     public ObservableCollection<string> SelectedFolders { get; } = new();
 
@@ -60,11 +61,13 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
     public LibrarySetupViewModel(
         IFolderRepository folderRepository,
         IFolderPickerService folderPickerService,
-        IPhotoImportService importService)
+        IPhotoImportService importService,
+        IProcessingWorker processingWorker)
     {
         _folderRepository = folderRepository;
         _folderPickerService = folderPickerService;
         _importService = importService;
+        _processingWorker = processingWorker;
         SelectedFolders.CollectionChanged += (_, _) =>
         {
             FolderCount = SelectedFolders.Count;
@@ -107,6 +110,10 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
             });
 
             await _importService.ImportAsync(progress);
+            
+            // Trigger immediate processing now that import is complete
+            await _processingWorker.TriggerProcessingAsync();
+            
             IsComplete = true;
         }
         finally
