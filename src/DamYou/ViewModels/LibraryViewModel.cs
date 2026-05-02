@@ -61,9 +61,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private int _photoCount;
 
-    [ObservableProperty]
-    private bool _showFolderModal;
-
     public string ScanProgressText =>
         IsScanning && ScanDiscovered == 0
             ? "Scanning…"
@@ -149,8 +146,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     private async Task InitializeAsync(CancellationToken ct)
     {
         await LoadPhotosAsync(ct);
-        var totalPhotos = await _photoRepository.CountAsync(ct);
-        ShowFolderModal = totalPhotos == 0;
     }
 
     /// <summary>

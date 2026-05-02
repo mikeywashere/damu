@@ -18,6 +18,15 @@
                        FontAttributes="Bold"
                        HorizontalOptions="Start" />
             </VerticalStackLayout>
+            <Button Grid.Column="1"
+                    Text="Scan Folders →"
+                    Command="{Binding RescanLibraryCommand}"
+                    IsEnabled="{Binding IsScanning, Converter={StaticResource InvertBoolConverter}}"
+                    VerticalOptions="End"
+                    Padding="12,6"
+                    CornerRadius="4"
+                    FontSize="12"
+                    Style="{StaticResource PrimaryButtonStyle}" />
         </Grid>
 
         <!-- Scan progress (visible only while scanning) -->

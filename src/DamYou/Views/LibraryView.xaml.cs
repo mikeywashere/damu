@@ -10,7 +10,6 @@ public partial class LibraryView : ContentPage
 {
     private readonly LibraryViewModel _vm;
     private readonly IServiceProvider _services;
-    private bool _hasShownInitialModal = false;
 
     public LibraryView(LibraryViewModel vm, IServiceProvider services)
     {
@@ -31,14 +30,6 @@ public partial class LibraryView : ContentPage
     {
         await _vm.InitializeCommand.ExecuteAsync(null);
         PopulateGrid();
-        
-        // Show the initial folder modal if no photos
-        if (_vm.ShowFolderModal && !_hasShownInitialModal)
-        {
-            _hasShownInitialModal = true;
-            var modal = _services.GetRequiredService<ManageFoldersModal>();
-            await Navigation.PushAsync(modal);
-        }
     }
 
     /// <summary>
