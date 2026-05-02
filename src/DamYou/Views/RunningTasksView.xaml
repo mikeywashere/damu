@@ -55,15 +55,13 @@
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:PipelineTaskDisplayItem">
-                    <VerticalStackLayout Padding="12,10"
-                                        Margin="0,4"
-                                        Spacing="6">
-                        <Grid.Background>
-                            <SolidColorBrush Color="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}" />
-                        </Grid.Background>
+                    <Grid Padding="12,10"
+                          Margin="0,4"
+                          RowDefinitions="Auto,Auto"
+                          BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}">
                         
                         <!-- Task header: name, status, time -->
-                        <Grid ColumnDefinitions="*,Auto" Padding="4,0">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="4,0">
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label Text="{Binding TaskName}"
                                        FontSize="13"
@@ -81,7 +79,7 @@
                         </Grid>
                         
                         <!-- Progress section (only if task has progress data) -->
-                        <VerticalStackLayout Spacing="4" 
+                        <VerticalStackLayout Grid.Row="1" Spacing="4" 
                                             IsVisible="{Binding TotalItems, Converter={StaticResource IntToBoolConverter}}"
                                             Padding="4,0">
                             <!-- Current item name (if available) -->
@@ -92,11 +90,10 @@
                                    Opacity="0.85" />
                             
                             <!-- Progress bar -->
-                            <Grid ColumnDefinitions="*,Auto" Spacing="8" VerticalOptions="Center">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" VerticalOptions="Center">
                                 <ProgressBar Grid.Column="0"
                                             Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageToProgressConverter}}"
                                             HeightRequest="6"
-                                            CornerRadius="3"
                                             VerticalOptions="Center">
                                     <ProgressBar.ProgressColor>
                                         <AppThemeBinding Light="#007AFF" Dark="#0A84FF" />
@@ -116,7 +113,7 @@
                                    FontSize="10"
                                    Opacity="0.6" />
                         </VerticalStackLayout>
-                    </VerticalStackLayout>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
