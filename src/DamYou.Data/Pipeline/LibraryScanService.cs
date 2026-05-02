@@ -38,7 +38,10 @@ public sealed class LibraryScanService : ILibraryScanService
         {
             TaskName = "Scan Library",
             Status = PipelineTaskStatus.Running,
-            StartedAt = DateTime.UtcNow
+            StartedAt = DateTime.UtcNow,
+            TotalItems = 0,
+            CurrentItemIndex = 0,
+            CurrentItemName = null
         };
         _db.PipelineTasks.Add(scanTask);
         await _db.SaveChangesAsync(ct);
@@ -63,6 +66,14 @@ public sealed class LibraryScanService : ILibraryScanService
 
                     ct.ThrowIfCancellationRequested();
                     totalDiscovered++;
+                    
+                    // Update progress tracking
+                    scanTask.TotalItems = totalDiscovered;
+                    scanTask.CurrentItemIndex = totalDiscovered;
+                    scanTask.CurrentItemName = Path.GetFileName(filePath);
+                    _db.PipelineTasks.Update(scanTask);
+                    await _db.SaveChangesAsync(ct);
+                    
                     progress?.Report(new ScanProgress(totalDiscovered, enqueued, folder.Path));
 
                     var existing = await _db.Photos

@@ -1,4 +1,6 @@
+using DamYou.Data.Entities;
 using DamYou.Data.Pipeline;
+using Microsoft.EntityFrameworkCore;
 
 namespace DamYou.Data.Analysis;
 
@@ -26,12 +28,38 @@ public sealed class PipelineProcessorService : IPipelineProcessorService
             .Where(t => t.TaskName == "Process Photo" && t.PhotoId.HasValue)
             .ToList();
 
+        if (photoTasks.Count == 0)
+            return;
+
+        // Create or update processing task to track overall progress
+        var processingTask = new PipelineTask
+        {
+            TaskName = "Process Photo",
+            Status = PipelineTaskStatus.Running,
+            StartedAt = DateTime.UtcNow,
+            TotalItems = photoTasks.Count,
+            CurrentItemIndex = 0,
+            CurrentItemName = null
+        };
+        _db.PipelineTasks.Add(processingTask);
+        await _db.SaveChangesAsync(ct);
+
         int total = photoTasks.Count;
         int completed = 0;
 
         foreach (var task in photoTasks)
         {
             ct.ThrowIfCancellationRequested();
+            
+            var photo = await _db.Photos.FirstOrDefaultAsync(p => p.Id == task.PhotoId, ct);
+            if (photo != null)
+            {
+                processingTask.CurrentItemIndex = completed + 1;
+                processingTask.CurrentItemName = photo.FileName;
+                _db.PipelineTasks.Update(processingTask);
+                await _db.SaveChangesAsync(ct);
+            }
+
             await _taskRepo.UpdateStatusAsync(task.Id, PipelineTaskStatus.Running, ct: ct);
             try
             {
@@ -53,5 +81,10 @@ public sealed class PipelineProcessorService : IPipelineProcessorService
                 completed++;
             }
         }
+
+        processingTask.Status = PipelineTaskStatus.Completed;
+        processingTask.CompletedAt = DateTime.UtcNow;
+        _db.PipelineTasks.Update(processingTask);
+        await _db.SaveChangesAsync(ct);
     }
 }
