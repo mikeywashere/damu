@@ -260,8 +260,8 @@ public partial class GalleryView : ContentPage
         var image = new Image
         {
             Aspect = Aspect.AspectFit,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center
+            HorizontalOptions = LayoutOptions.FillAndExpand,
+            VerticalOptions = LayoutOptions.FillAndExpand
         };
         image.SetBinding(Image.SourceProperty, new Binding("FilePath", BindingMode.OneWay,
             converter: new DamYou.Converters.FilePathToImageSourceConverter()));

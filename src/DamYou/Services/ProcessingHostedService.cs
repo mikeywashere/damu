@@ -36,16 +36,21 @@ public sealed class ProcessingHostedService : IHostedService, IProcessingWorker
     }
 
     /// <summary>
-    /// Called when the app starts. Initializes cancellation token source.
-    /// Does NOT start processing automatically — waits for manual TriggerProcessingAsync() call.
+    /// Called when the app starts. Initializes cancellation token source and starts the processing timer.
+    /// Processing will begin automatically and periodically check for pending work.
     /// </summary>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("ProcessingHostedService started (manual trigger mode)");
+        _logger.LogInformation("ProcessingHostedService started (auto-timer mode)");
         _stoppingCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        // No auto-start timer. Processing is triggered manually via TriggerProcessingAsync()
-        // called from UI (status bar "Start Processing" button).
+        // Start a timer that checks for work every 2 seconds
+        _processingTimer = new Timer(
+            async (_) => await ProcessQueueIfPendingAsync(),
+            null,
+            TimeSpan.Zero,           // Start immediately
+            TimeSpan.FromSeconds(2)  // Check every 2 seconds
+        );
 
         return Task.CompletedTask;
     }
