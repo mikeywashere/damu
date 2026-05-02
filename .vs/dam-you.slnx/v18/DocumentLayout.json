@@ -1,12 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\src\\mikeywashere\\dam-you\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{C9D551A0-BC54-6856-B0F4-7A09DF69E67F}|src\\DamYou\\DamYou.csproj|c:\\src\\mikeywashere\\dam-you\\src\\damyou\\views\\libraryview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{C9D551A0-BC54-6856-B0F4-7A09DF69E67F}|src\\DamYou\\DamYou.csproj|solutionrelative:src\\damyou\\views\\libraryview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,21 +9,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": -1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "LibraryView.xaml",
-              "DocumentMoniker": "C:\\src\\mikeywashere\\dam-you\\src\\DamYou\\Views\\LibraryView.xaml",
-              "RelativeDocumentMoniker": "src\\DamYou\\Views\\LibraryView.xaml",
-              "ToolTip": "C:\\src\\mikeywashere\\dam-you\\src\\DamYou\\Views\\LibraryView.xaml",
-              "RelativeToolTip": "src\\DamYou\\Views\\LibraryView.xaml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-05-02T09:57:25.822Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"

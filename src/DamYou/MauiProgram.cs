@@ -71,7 +71,6 @@ public static class MauiProgram
         builder.Services.AddTransient<LibraryViewModel>();
         builder.Services.AddTransient<ManageFoldersViewModel>();
         builder.Services.AddTransient<TasksViewModel>();
-        builder.Services.AddSingleton<TabbedViewModel>();
         builder.Services.AddTransient<GalleryViewModel>();
         builder.Services.AddTransient<FoldersViewModel>();
         builder.Services.AddTransient<RunningTasksViewModel>();
@@ -90,11 +89,11 @@ public static class MauiProgram
         builder.Services.AddTransient<LibraryView>();
         builder.Services.AddTransient<ManageFoldersModal>();
         builder.Services.AddTransient<TasksView>();
-        builder.Services.AddSingleton<TabbedView>();
         builder.Services.AddTransient<GalleryView>();
         builder.Services.AddTransient<FoldersView>();
         builder.Services.AddTransient<RunningTasksView>();
         builder.Services.AddSingleton<StatusBar>(); // Status bar (singleton for global state binding)
+        builder.Services.AddSingleton<AppShell>();
 
         // App
         builder.Services.AddSingleton<App>();
@@ -115,6 +114,11 @@ public static class MauiProgram
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
         db.Database.Migrate();
+
+        // Register shell routes for DI-aware navigation
+        Routing.RegisterRoute("gallery", typeof(GalleryView));
+        Routing.RegisterRoute("folders", typeof(FoldersView));
+        Routing.RegisterRoute("running-tasks", typeof(RunningTasksView));
 
         return app;
     }

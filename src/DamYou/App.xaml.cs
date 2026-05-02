@@ -39,7 +39,7 @@ public partial class App : Application
             MinimumHeight = 600,
         };
 
-        // After 2 seconds, transition to TabbedView
+        // After 2 seconds, transition to Shell with tabs
         _ = SplashTransitionAsync();
 
         return window;
@@ -63,7 +63,8 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Navigate from splash screen to TabbedView (main shell).
+    /// Navigate from splash screen to AppShell with tabs.
+    /// Replaces the entire window with the Shell-based tabbed interface.
     /// </summary>
     private async Task NavigateFromSplashAsync()
     {
@@ -71,23 +72,14 @@ public partial class App : Application
         {
             var folderRepository = _services.GetRequiredService<IFolderRepository>();
             var folders = await folderRepository.GetActiveFoldersAsync();
-            
-            // If no folders, show folders tab; otherwise show gallery tab
-            var tabbedView = _services.GetRequiredService<TabbedView>();
-            var vm = tabbedView.BindingContext as TabbedViewModel;
-            if (vm != null && folders.Count == 0)
-            {
-                vm.SelectedTabIndex = 1; // Folders tab
-            }
-            else if (vm != null)
-            {
-                vm.SelectedTabIndex = 0; // Gallery tab
-            }
 
-            if (Windows.Count > 0 && Windows[0].Page is NavigationPage nav)
-            {
-                await nav.PushAsync(tabbedView);
-            }
+            // Get the AppShell and set it as the main shell
+            var appShell = _services.GetRequiredService<AppShell>();
+            Application.Current!.MainPage = appShell;
+
+            // Route to the appropriate tab: folders if no folders configured, else gallery
+            var route = folders.Count == 0 ? "folders" : "gallery";
+            await Shell.Current.GoToAsync(route);
         }
         catch (Exception ex)
         {
