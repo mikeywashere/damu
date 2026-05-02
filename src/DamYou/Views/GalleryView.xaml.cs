@@ -125,22 +125,8 @@ public partial class GalleryView : ContentPage
         image.GestureRecognizers.Add(tapGestureRecognizer);
         
         // Add tooltip with metadata: filename, date, resolution
-        string metadata = $"{gridItem.FileName}\n";
-        if (gridItem.DateTaken.HasValue)
-        {
-            metadata += gridItem.DateTaken.Value.ToString("2026-05-02 HH:mm");
-        }
-        else
-        {
-            metadata += gridItem.DateIndexed.ToString("2026-05-02 HH:mm");
-        }
-
-        if (gridItem.Width.HasValue && gridItem.Height.HasValue)
-        {
-            metadata += $"\n{gridItem.Width}×{gridItem.Height}";
-        }
-
-        ToolTipProperties.SetText(image, metadata);
+        var tooltipText = BuildPhotoTooltip(gridItem);
+        ToolTipProperties.SetText(image, tooltipText);
         
         grid.Add(image);
 

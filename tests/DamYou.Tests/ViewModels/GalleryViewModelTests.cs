@@ -303,7 +303,7 @@ public sealed class GalleryViewModelTests
             vm.ResizeGrid(-1);
         }
 
-        Assert.GreaterThanOrEqual(vm.CurrentGridCellSize, minSize);
+        Assert.True(vm.CurrentGridCellSize >= minSize);
     }
 
     [Fact]
@@ -320,7 +320,7 @@ public sealed class GalleryViewModelTests
             vm.ResizeGrid(1);
         }
 
-        Assert.LessThanOrEqual(vm.CurrentGridCellSize, maxSize);
+        Assert.True(vm.CurrentGridCellSize <= maxSize);
     }
 
     #endregion
