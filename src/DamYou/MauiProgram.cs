@@ -108,6 +108,9 @@ public static class MauiProgram
         builder.Services.AddLogging(c => c.AddDebug());
         builder.Services.AddSingleton<IProcessingWorker, ProcessingHostedService>();
         builder.Services.AddHostedService(sp => sp.GetRequiredService<ProcessingHostedService>());
+        
+        // Dedicated file processor (optional, runs independently from folder scanning)
+        builder.Services.AddHostedService<DedicatedFileProcessorService>();
 
         // Views
         builder.Services.AddTransient<SplashScreenView>();
