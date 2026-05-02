@@ -13,6 +13,17 @@ public sealed class PipelineTaskDisplayItem
     public int? PhotoId { get; init; }
     public DateTime CreatedAt { get; init; }
     public bool IsRunningOrQueued { get; init; }
+    
+    // Progress tracking
+    public string? CurrentItemName { get; init; }
+    public int CurrentItemIndex { get; init; }
+    public int TotalItems { get; init; }
+    
+    public double ProgressPercentage => TotalItems > 0 ? (CurrentItemIndex * 100.0) / TotalItems : 0;
+    
+    public string ProgressText => TotalItems > 0 
+        ? $"{CurrentItemIndex} of {TotalItems}"
+        : string.Empty;
 
     public static PipelineTaskDisplayItem From(DamYou.Data.Entities.PipelineTask task) => new()
     {
@@ -28,7 +39,10 @@ public sealed class PipelineTaskDisplayItem
         },
         PhotoId = task.PhotoId,
         CreatedAt = task.CreatedAt,
-        IsRunningOrQueued = task.Status is PipelineTaskStatus.Queued or PipelineTaskStatus.Running
+        IsRunningOrQueued = task.Status is PipelineTaskStatus.Queued or PipelineTaskStatus.Running,
+        CurrentItemName = task.CurrentItemName,
+        CurrentItemIndex = task.CurrentItemIndex,
+        TotalItems = task.TotalItems
     };
 }
 

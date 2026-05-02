@@ -5,4 +5,6 @@
     <conv:IntToBoolConverter x:Key="IntToBoolConverter" />
     <conv:InvertBoolConverter x:Key="InvertBoolConverter" />
     <conv:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <conv:PercentageToProgressConverter x:Key="PercentageToProgressConverter" />
+    <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
 </ResourceDictionary>
