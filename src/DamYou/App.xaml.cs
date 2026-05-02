@@ -32,18 +32,47 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        // Check if folders exist. If yes, show LibraryView (photos). If no, show LibrarySetupModal (setup dialog).
-        var folders = _folderRepository.GetActiveFoldersAsync().GetAwaiter().GetResult();
-        var startPage = folders.Count > 0
-            ? (Page)_services.GetRequiredService<LibraryView>()
-            : _services.GetRequiredService<LibrarySetupModal>();
-
-        return new Window(new NavigationPage(startPage))
+        // Always start with splash screen
+        var splashPage = _services.GetRequiredService<SplashScreenView>();
+        var window = new Window(new NavigationPage(splashPage))
         {
             Title = "dam-you",
             MinimumWidth = 800,
             MinimumHeight = 600,
         };
+
+        // After 2 seconds, transition to the main page
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await Task.Delay(2000);
+            await NavigateFromSplashAsync();
+        });
+
+        return window;
+    }
+
+    /// <summary>
+    /// Navigate from splash screen to the appropriate main page (LibraryView or setup).
+    /// Called after 2-second splash delay.
+    /// </summary>
+    private async Task NavigateFromSplashAsync()
+    {
+        try
+        {
+            var folders = await _folderRepository.GetActiveFoldersAsync();
+            var targetPage = folders.Count > 0
+                ? (Page)_services.GetRequiredService<LibraryView>()
+                : _services.GetRequiredService<LibrarySetupModal>();
+
+            if (Windows.Count > 0 && Windows[0].Page is NavigationPage nav)
+            {
+                await nav.PushAsync(targetPage);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error navigating from splash: {ex.Message}");
+        }
     }
 
     public async Task NavigateAfterSetupAsync()

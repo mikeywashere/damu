@@ -80,6 +80,7 @@ public static class MauiProgram
         builder.Services.AddHostedService<ProcessingHostedService>(sp => sp.GetRequiredService<ProcessingHostedService>());
 
         // Views
+        builder.Services.AddTransient<SplashScreenView>();
         builder.Services.AddTransient<LibrarySetupModal>();
         builder.Services.AddTransient<LibraryView>();
         builder.Services.AddTransient<ManageFoldersModal>();
