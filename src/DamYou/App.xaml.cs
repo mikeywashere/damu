@@ -40,13 +40,26 @@ public partial class App : Application
         };
 
         // After 2 seconds, transition to the main page
-        MainThread.BeginInvokeOnMainThread(async () =>
+        _ = SplashTransitionAsync();
+
+        return window;
+    }
+
+    /// <summary>
+    /// Schedules the transition from splash screen after 2 seconds.
+    /// Separated to ensure proper async handling and error management.
+    /// </summary>
+    private async Task SplashTransitionAsync()
+    {
+        try
         {
             await Task.Delay(2000);
             await NavigateFromSplashAsync();
-        });
-
-        return window;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error during splash transition: {ex.Message}");
+        }
     }
 
     /// <summary>
