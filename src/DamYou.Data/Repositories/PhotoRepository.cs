@@ -52,4 +52,28 @@ public sealed class PhotoRepository : IPhotoRepository
             .AsNoTracking()
             .ToListAsync(ct);
     }
+
+    /// <summary>
+    /// Gets all file paths for a photo (including the original and any duplicates).
+    /// </summary>
+    public async Task<List<string>> GetDuplicatePathsAsync(int photoId, CancellationToken ct = default)
+    {
+        var photo = await _db.Photos
+            .Where(p => p.Id == photoId)
+            .Select(p => new { p.FilePath })
+            .FirstOrDefaultAsync(ct);
+
+        if (photo is null)
+            return [];
+
+        var duplicatePaths = await _db.PhotoDuplicates
+            .Where(d => d.PhotoId == photoId)
+            .Select(d => d.FilePath)
+            .AsNoTracking()
+            .ToListAsync(ct);
+
+        var allPaths = new List<string> { photo.FilePath };
+        allPaths.AddRange(duplicatePaths);
+        return allPaths;
+    }
 }

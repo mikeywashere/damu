@@ -11,6 +11,7 @@ public sealed class DamYouDbContext : DbContext
     public DbSet<WatchedFolder> WatchedFolders => Set<WatchedFolder>();
     public DbSet<PhotoFolder> PhotoFolders => Set<PhotoFolder>();
     public DbSet<Photo> Photos => Set<Photo>();
+    public DbSet<PhotoDuplicate> PhotoDuplicates => Set<PhotoDuplicate>();
     public DbSet<PipelineTask> PipelineTasks => Set<PipelineTask>();
     public DbSet<PhotoEmbedding> PhotoEmbeddings => Set<PhotoEmbedding>();
     public DbSet<PhotoDetectedObject> PhotoDetectedObjects => Set<PhotoDetectedObject>();
@@ -55,6 +56,19 @@ public sealed class DamYouDbContext : DbContext
              .HasForeignKey(x => x.PhotoFolderId)
              .OnDelete(DeleteBehavior.Cascade)
              .IsRequired(false);
+        });
+
+        modelBuilder.Entity<PhotoDuplicate>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.PhotoId).HasDatabaseName("IX_PhotoDuplicates_PhotoId");
+            e.HasIndex(x => x.FilePath).HasDatabaseName("IX_PhotoDuplicates_FilePath");
+            e.Property(x => x.FilePath).IsRequired();
+            e.Property(x => x.FileName).IsRequired();
+            e.HasOne(x => x.Photo)
+             .WithMany()
+             .HasForeignKey(x => x.PhotoId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<PipelineTask>(e =>

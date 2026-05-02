@@ -201,6 +201,10 @@ public sealed partial class GalleryViewModel : ObservableObject
                 
                 _currentSkip = photos.Count;
                 PhotoCount = GridPhotos.Count;
+                
+                // Load file paths for all loaded photos
+                await LoadFilePathsForPhotosAsync(GridPhotos, CancellationToken.None);
+                
                 RecalculateTotalPages();
             }
         }
@@ -257,6 +261,10 @@ public sealed partial class GalleryViewModel : ObservableObject
 
             _currentSkip = photos.Count;
             PhotoCount = GridPhotos.Count;
+            
+            // Load file paths for all loaded photos
+            await LoadFilePathsForPhotosAsync(GridPhotos, ct);
+            
             RecalculateTotalPages();
         }
         finally
@@ -293,6 +301,10 @@ public sealed partial class GalleryViewModel : ObservableObject
 
             _currentSkip += photos.Count;
             PhotoCount = GridPhotos.Count;
+            
+            // Load file paths for all newly loaded photos
+            var newItems = GridPhotos.Skip(GridPhotos.Count - photos.Count).ToList();
+            await LoadFilePathsForPhotosAsync(newItems, ct);
             
             CurrentPage = (int)Math.Ceiling((double)_currentSkip / pageSize);
             RecalculateTotalPages();
@@ -378,6 +390,23 @@ public sealed partial class GalleryViewModel : ObservableObject
         finally
         {
             IsScanning = false;
+        }
+    }
+
+    private async Task LoadFilePathsForPhotosAsync(IEnumerable<PhotoGridItem> items, CancellationToken ct)
+    {
+        foreach (var item in items)
+        {
+            try
+            {
+                var paths = await _photoRepository.GetDuplicatePathsAsync(item.Id, ct);
+                item.AllFilePaths = paths;
+            }
+            catch
+            {
+                // If we can't load paths, just use the main file path
+                item.AllFilePaths = [item.FilePath];
+            }
         }
     }
 }

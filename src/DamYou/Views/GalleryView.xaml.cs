@@ -308,7 +308,7 @@ public partial class GalleryView : ContentPage
     }
 
     /// <summary>
-    /// Builds a tooltip string with photo metadata: filename, date modified, and resolution.
+    /// Builds a tooltip string with photo metadata: filename, date modified, resolution, and file paths.
     /// </summary>
     private string BuildPhotoTooltip(PhotoGridItem photo)
     {
@@ -324,6 +324,16 @@ public partial class GalleryView : ContentPage
 
         if (photo.Width.HasValue && photo.Height.HasValue)
             tooltipParts.Add($"📐 {photo.Width}×{photo.Height}");
+
+        // Add file path(s) - show all copies if duplicates exist
+        if (photo.AllFilePaths.Count > 0)
+        {
+            if (photo.AllFilePaths.Count == 1)
+                tooltipParts.Add($"📋 {photo.AllFilePaths[0]}");
+            else
+                tooltipParts.Add($"📋 Stored in {photo.AllFilePaths.Count} locations:\n   " + 
+                    string.Join("\n   ", photo.AllFilePaths));
+        }
 
         return string.Join("\n", tooltipParts);
     }

@@ -14,4 +14,5 @@ public interface IPhotoRepository
     Task AddPhotosAsync(IEnumerable<Photo> photos, CancellationToken ct = default);
     Task<List<Photo>> GetPageAsync(int skip, int take, CancellationToken ct = default);
     Task<List<Photo>> SearchAsync(string searchText, int skip, int take, CancellationToken ct = default);
+    Task<List<string>> GetDuplicatePathsAsync(int photoId, CancellationToken ct = default);
 }
