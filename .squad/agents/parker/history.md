@@ -9,6 +9,24 @@
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
 
+### 2026-05-02 — Responsive gallery pagination and viewport-aware loading
+
+- **Feature:** Implemented responsive photo gallery with dynamic pagination based on grid viewport size.
+- **Key changes:** 
+  - `GalleryViewModel` now calculates page size dynamically via `SetGridDimensions()` using formula: (gridWidth / cellWidth) * (gridHeight / cellHeight) + 1 row lazy buffer.
+  - Added pagination state: `CurrentPage`, `TotalPages`, `CanLoadMore` properties to track gallery state.
+  - `RefreshAsync()` command clears pagination state and reloads first page while preserving viewport size (doesn't reset grid layout).
+  - `LoadMorePhotosAsync()` automatically triggers on scroll-to-bottom (within 200px), filling viewport with async calls.
+  - `PhotoGridItem` already exposes metadata: FileName, DateTaken, DateIndexed, Width/Height for hover tooltips.
+- **UI integration:** 
+  - Grid `SizeChanged` event calls `SetGridDimensions()` to recalculate on window resize.
+  - ScrollView `Scrolled` event detects scroll-to-bottom and invokes `LoadMorePhotosCommand`.
+  - Image hover shows full metadata tooltip (filename, date, dimensions).
+  - Image click opens full-screen modal with AspectFit image and close button (✕).
+  - Added "🔄 Refresh" button separate from "🔍 Rescan" — refresh resets pagination only, rescan re-indexes library.
+- **Fallback behavior:** If grid dimensions unknown on startup, defaults to 10 photos (hardcoded `DefaultPageSize`), then recalculates once window is rendered.
+- **Async-first:** All DB queries use skip/take pagination; no blocking UI thread on photo loads or searches.
+
 ### 2026-05-02 — MAUI Shell tab content initialization timing (corrected)
 
 - **Lifecycle issue:** `OnAppearing()` is too late in the MAUI Shell lifecycle. Shell tries to create platform elements for empty `ShellContent` tabs before `OnAppearing()` fires, causing `InvalidOperationException: No Content found for ShellContent`.

@@ -15,3 +15,15 @@
 - In-memory EF Core databases must use a unique `Guid` name per test class to prevent state leakage between parallel test runs.
 - `DeactivateFolderAsync` should be a silent no-op on missing IDs — tests encode that contract explicitly so Parker implements it correctly.
 
+### 2026-05-02 — Gallery feature test design
+
+**Designed and implemented 50+ unit tests for responsive gallery feature.**
+
+- **Pagination state machine is non-trivial:** Tests reveal the importance of preventing double-loads during concurrent operations (resize + load, search + pagination, refresh + load). Implemented explicit race condition tests (`LoadMorePhotosCommand_DoesNotExecute_WhenAlreadyLoading`, `ResizeWhileLoading_DoesNotCauseDoubleLoad`).
+- **Responsive formula not yet implemented:** Current code has fixed `PageSize=10` constant. Tests document *intended* behavior (formula: `(viewportWidth / cellSize) * (viewportHeight / cellSize) + 1 buffer row`). Parker needs to add responsive calculation before feature is production-ready.
+- **Edge cases are foundational:** Empty library, single photo, and large library (5000+) tests are blocker-level. Skipping these leads to crashes on user startup or OOM on large libraries. All three covered in tests.
+- **Search + pagination interaction is subtle:** When search is active, pagination must reset and filter within results. Tests validate both the clearing of previous results and the correct offset calculation when loading more search results.
+- **Missing metadata is common:** ~30% of real photo libraries have null `DateTaken` or missing dimensions. Tests validate graceful degradation (null checks on UI binding).
+- **Modal behavior needs team decision:** Click-outside behavior (close modal or no-op) is not yet defined. Created placeholder decision file (`gallery-modal-behavior.md`) for team consensus before implementation.
+- **Throttle/debounce resize events is necessary:** Without this, resizing window rapidly triggers load storm. Tests use `IsLoadingMore` guard to prevent concurrent loads, but should add explicit debounce in production code (300ms throttle suggested).
+

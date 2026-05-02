@@ -9,6 +9,15 @@
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
 
+### 2026-05-02 — Gallery Enhancement Architecture (Feature Request)
+
+- **Viewport-aware loading:** Implement as scroll-position monitoring in View codebehind, not SizeChanged. When ScrollView reaches 90% of content height, fire `LoadMorePhotosCommand`. Simpler than predicting FlexLayout wrapping.
+- **Pagination state:** Current ViewModel design is sound — `_currentSkip` and `_totalPhotoCount` are correct abstractions. No refactoring needed.
+- **Modal viewer:** Use standalone Shell page (PhotoViewerModal) for image inspection. Simpler lifecycle than overlays; matches MAUI idiomatic patterns.
+- **Refresh strategy:** Hard refresh (clear collection + reload from DB) is correct for single-user app. No cache invalidation logic needed.
+- **Hover/Tooltips on desktop:** Use CommunityToolkit ToolTip or custom overlay. This is a Windows-first app, so hover is a reasonable affordance.
+- **File path patterns:** GalleryView is at `src/DamYou/Views/GalleryView.xaml`; ViewModels at `src/DamYou/ViewModels/`. PhotoGridItem model bridges Photo entity with UI state.
+
 ### 2026-04-27 — Initial Architecture (Design Review)
 
 - **Solution split:** Two src projects (`DamYou` MAUI app + `DamYou.Data` class library) plus `tests/` and `tools/`. Minimum useful split for testability without over-engineering.

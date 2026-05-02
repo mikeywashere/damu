@@ -11,7 +11,7 @@
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" Padding="12">
 
         <!-- Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,0,0,12">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8" Margin="0,0,0,12">
             <VerticalStackLayout Grid.Column="0" Spacing="4">
                 <Label Text="📷 Your Library"
                        FontSize="24"
@@ -19,6 +19,24 @@
                        HorizontalOptions="Start" />
             </VerticalStackLayout>
             <Button Grid.Column="1"
+                    Text="Load More ↓"
+                    Command="{Binding LoadMorePhotosCommand}"
+                    IsEnabled="{Binding IsLoadingMore, Converter={StaticResource InvertBoolConverter}}"
+                    VerticalOptions="End"
+                    Padding="12,6"
+                    CornerRadius="4"
+                    FontSize="12"
+                    Style="{StaticResource SecondaryButtonStyle}" />
+            <Button Grid.Column="2"
+                    Text="🔄 Refresh"
+                    Command="{Binding RefreshCommand}"
+                    IsEnabled="{Binding IsLoadingMore, Converter={StaticResource InvertBoolConverter}}"
+                    VerticalOptions="End"
+                    Padding="12,6"
+                    CornerRadius="4"
+                    FontSize="12"
+                    Style="{StaticResource SecondaryButtonStyle}" />
+            <Button Grid.Column="3"
                     Text="Scan Folders →"
                     Command="{Binding RescanLibraryCommand}"
                     IsEnabled="{Binding IsScanning, Converter={StaticResource InvertBoolConverter}}"
@@ -113,7 +131,7 @@
         </Grid>
 
         <!-- Grid View -->
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4" SizeChanged="OnGridViewSizeChanged">
             <!-- Empty State -->
             <VerticalStackLayout HorizontalOptions="Center"
                                 VerticalOptions="Center"
@@ -134,7 +152,8 @@
 
             <!-- Photo Grid -->
             <ScrollView x:Name="GridScrollView"
-                       IsVisible="{Binding GridPhotos.Count, Converter={StaticResource IntToBoolConverter}}">
+                       IsVisible="{Binding GridPhotos.Count, Converter={StaticResource IntToBoolConverter}}"
+                       Scrolled="OnGridScrolled">
                 <FlexLayout x:Name="PhotoGrid"
                            Wrap="Wrap"
                            JustifyContent="Start"
@@ -167,7 +186,13 @@
 
             <!-- Action buttons -->
             <HorizontalStackLayout Grid.Column="1" Spacing="12">
-                <Button Text="🔄 Rescan"
+                <Button Text="🔄 Refresh"
+                        Command="{Binding RefreshCommand}"
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource InvertBoolConverter}}"
+                        Padding="8"
+                        FontSize="12"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+                <Button Text="🔍 Rescan"
                         Command="{Binding RescanLibraryCommand}"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource InvertBoolConverter}}"
                         Padding="8"
