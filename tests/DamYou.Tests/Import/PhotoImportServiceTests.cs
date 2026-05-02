@@ -1,5 +1,4 @@
 using DamYou.Data;
-using DamYou.Data.Entities;
 using DamYou.Data.Import;
 using DamYou.Data.Repositories;
 using DamYou.Tests.Fixtures;
@@ -43,9 +42,9 @@ public sealed class PhotoImportServiceTests : IDisposable
         _fixture.CreatePhotos(5);
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ImportAsync();
+        await _sut.ImportAsync(null, CancellationToken.None);
 
-        Assert.Equal(5, await _db.Photos.CountAsync());
+        Assert.Equal(5, await _db.Photos.CountAsync(CancellationToken.None));
     }
 
     [Fact]
@@ -56,9 +55,9 @@ public sealed class PhotoImportServiceTests : IDisposable
         _fixture.CreatePhoto("sub2.jpg", subFolder: "level1/level2");
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ImportAsync();
+        await _sut.ImportAsync(null, CancellationToken.None);
 
-        Assert.Equal(3, await _db.Photos.CountAsync());
+        Assert.Equal(3, await _db.Photos.CountAsync(CancellationToken.None));
     }
 
     [Fact]
@@ -70,9 +69,9 @@ public sealed class PhotoImportServiceTests : IDisposable
         File.WriteAllText(Path.Combine(_fixture.RootDirectory, "video.mp4"), "ignore me");
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ImportAsync();
+        await _sut.ImportAsync(null, CancellationToken.None);
 
-        Assert.Equal(1, await _db.Photos.CountAsync());
+        Assert.Equal(1, await _db.Photos.CountAsync(CancellationToken.None));
     }
 
     [Fact]
@@ -81,9 +80,9 @@ public sealed class PhotoImportServiceTests : IDisposable
         var path = _fixture.CreatePhoto("hash-test.jpg");
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ImportAsync();
+        await _sut.ImportAsync(null, CancellationToken.None);
 
-        var photo = await _db.Photos.SingleAsync();
+        var photo = await _db.Photos.SingleAsync(CancellationToken.None);
         var expectedHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant();
         Assert.Equal(expectedHash, photo.FileHash);
     }
@@ -94,10 +93,10 @@ public sealed class PhotoImportServiceTests : IDisposable
         _fixture.CreatePhotos(3);
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ImportAsync();
-        await _sut.ImportAsync();
+        await _sut.ImportAsync(null, CancellationToken.None);
+        await _sut.ImportAsync(null, CancellationToken.None);
 
-        Assert.Equal(3, await _db.Photos.CountAsync());
+        Assert.Equal(3, await _db.Photos.CountAsync(CancellationToken.None));
     }
 
     [Fact]
@@ -105,10 +104,12 @@ public sealed class PhotoImportServiceTests : IDisposable
     {
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        var ex = await Record.ExceptionAsync(() => _sut.ImportAsync());
+#pragma warning disable HAA0301 // Closure Allocation Source
+        var ex = await Record.ExceptionAsync(() => _sut.ImportAsync(null, CancellationToken.None));
+#pragma warning restore HAA0301 // Closure Allocation Source
 
         Assert.Null(ex);
-        Assert.Equal(0, await _db.Photos.CountAsync());
+        Assert.Equal(0, await _db.Photos.CountAsync(CancellationToken.None));
     }
 
     [Fact]
@@ -118,13 +119,17 @@ public sealed class PhotoImportServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         using var cts = new CancellationTokenSource();
+#pragma warning disable HAA0301 // Closure Allocation Source
         var progress = new Progress<ImportProgress>(_ => cts.Cancel());
+#pragma warning restore HAA0301 // Closure Allocation Source
 
+#pragma warning disable HAA0301 // Closure Allocation Source
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
             () => _sut.ImportAsync(progress, cts.Token));
+#pragma warning restore HAA0301 // Closure Allocation Source
 
         // At least the first file was processed before cancellation
-        Assert.True(await _db.Photos.CountAsync() >= 0);
+        Assert.True(await _db.Photos.CountAsync(CancellationToken.None) >= 0);
     }
 
     [Fact]
@@ -135,12 +140,12 @@ public sealed class PhotoImportServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         var reports = new List<ImportProgress>();
-        var progress = new Progress<ImportProgress>(p => reports.Add(p));
+        var progress = new Progress<ImportProgress>(reports.Add);
 
-        await _sut.ImportAsync(progress);
+        await _sut.ImportAsync(progress, CancellationToken.None);
 
         // Progress<T> posts asynchronously; give it a moment to flush
-        await Task.Delay(50);
+        await Task.Delay(50, CancellationToken.None);
 
         Assert.Equal(photoCount, reports.Count);
         Assert.All(reports, r => Assert.Equal(photoCount, r.TotalDiscovered));

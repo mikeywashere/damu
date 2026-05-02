@@ -4,7 +4,6 @@ using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
 using DamYou.Tests.Fixtures;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace DamYou.Tests.Views;
 
@@ -27,7 +26,7 @@ public sealed class LibraryGridTests : IDisposable
         _db = new DamYouDbContext(options);
         _photoRepository = new PhotoRepository(_db);
         _photoFixture = new SyntheticPhotoFixture();
-        
+
         _testFolder = new WatchedFolder { Path = _photoFixture.RootDirectory, IsActive = true };
         _db.WatchedFolders.Add(_testFolder);
         _db.SaveChanges();
@@ -41,7 +40,7 @@ public sealed class LibraryGridTests : IDisposable
         // ProcessingStatus enum should have values: Unprocessed=0, Processing=1, Processed=2
         // This test validates the enum definition if it exists in Photo entity.
         // For now, we verify the pattern with similar enums in the codebase.
-        
+
         Assert.Equal(0, (int)PipelineTaskStatus.Queued);
         Assert.Equal(1, (int)PipelineTaskStatus.Running);
         Assert.Equal(2, (int)PipelineTaskStatus.Completed);
@@ -104,7 +103,7 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Load first batch (offset=0, limit=10)
         var batch1 = await _db.Photos
@@ -112,7 +111,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(0)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.NotNull(batch1);
         Assert.Equal(10, batch1.Count);
@@ -133,7 +132,7 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // First batch
         var batch1 = await _db.Photos
@@ -141,7 +140,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(0)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(10, batch1.Count);
 
         // Second batch (offset=10, limit=10) — simulates scroll to 80%
@@ -150,7 +149,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(10)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.Equal(10, batch2.Count);
         // Verify no overlap
@@ -173,7 +172,7 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Batch 1: 0-10
         var batch1 = await _db.Photos
@@ -181,7 +180,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(0)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(10, batch1.Count);
 
         // Batch 2: 10-20
@@ -190,7 +189,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(10)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(10, batch2.Count);
 
         // Batch 3: 20-30 (only 5 available)
@@ -199,7 +198,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(20)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(5, batch3.Count);
 
         // Batch 4: 30+ (none available)
@@ -208,7 +207,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(30)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Empty(batch4);
     }
 
@@ -226,7 +225,7 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Load batch 1
         var batch1Ids = (await _db.Photos
@@ -234,7 +233,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(0)
             .Take(10)
-            .ToListAsync())
+            .ToListAsync(CancellationToken.None))
             .Select(p => p.Id)
             .ToHashSet();
 
@@ -244,7 +243,7 @@ public sealed class LibraryGridTests : IDisposable
             .OrderBy(p => p.Id)
             .Skip(10)
             .Take(10)
-            .ToListAsync())
+            .ToListAsync(CancellationToken.None))
             .Select(p => p.Id)
             .ToHashSet();
 
@@ -266,7 +265,7 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         var cts = new CancellationTokenSource();
         cts.CancelAfter(TimeSpan.FromMilliseconds(10));
@@ -307,12 +306,12 @@ public sealed class LibraryGridTests : IDisposable
             new Photo { FileName = "beach-vacation.jpg", FilePath = "/p/beach-vacation.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, WatchedFolderId = _testFolder.Id },
             new Photo { FileName = "family-dinner.jpg", FilePath = "/p/family-dinner.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, WatchedFolderId = _testFolder.Id },
         };
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Search for "vacation"
         var results = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.FileName.Contains("vacation"))
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.Equal(2, results.Count);
         Assert.All(results, p => Assert.Contains("vacation", p.FileName));
@@ -326,12 +325,12 @@ public sealed class LibraryGridTests : IDisposable
             new Photo { FileName = "photo1.jpg", FilePath = "/p/photo1.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, WatchedFolderId = _testFolder.Id },
             new Photo { FileName = "photo2.jpg", FilePath = "/p/photo2.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, WatchedFolderId = _testFolder.Id },
         };
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Search for non-existent term
         var results = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.FileName.Contains("nonexistent"))
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.Empty(results);
     }
@@ -351,14 +350,14 @@ public sealed class LibraryGridTests : IDisposable
             new Photo { FileName = "recent.jpg", FilePath = "/p/recent.jpg", FileSizeBytes = 1024, DateIndexed = yesterday, WatchedFolderId = _testFolder.Id },
             new Photo { FileName = "today.jpg", FilePath = "/p/today.jpg", FileSizeBytes = 1024, DateIndexed = now, WatchedFolderId = _testFolder.Id },
         };
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Filter by date range: last 2 days
         var startDate = now.AddDays(-2);
         var results = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.DateIndexed >= startDate)
             .OrderByDescending(p => p.DateIndexed)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.Equal(3, results.Count);
         Assert.Contains(results, p => p.FileName == "today.jpg");
@@ -377,26 +376,26 @@ public sealed class LibraryGridTests : IDisposable
             new Photo { FileName = "unprocessed1.jpg", FilePath = "/p/unprocessed1.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, Status = ProcessingStatus.Unprocessed, WatchedFolderId = _testFolder.Id },
             new Photo { FileName = "unprocessed2.jpg", FilePath = "/p/unprocessed2.jpg", FileSizeBytes = 1024, DateIndexed = DateTime.UtcNow, Status = ProcessingStatus.Unprocessed, WatchedFolderId = _testFolder.Id },
         };
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Filter for processed
         var processed = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.Status == ProcessingStatus.Processed)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(2, processed.Count);
         Assert.All(processed, p => Assert.Equal(ProcessingStatus.Processed, p.Status));
 
         // Filter for unprocessed
         var unprocessed = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.Status == ProcessingStatus.Unprocessed)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(2, unprocessed.Count);
         Assert.All(unprocessed, p => Assert.Equal(ProcessingStatus.Unprocessed, p.Status));
 
         // Filter for processing
         var processing = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.Status == ProcessingStatus.Processing)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Empty(processing);
     }
 
@@ -414,18 +413,18 @@ public sealed class LibraryGridTests : IDisposable
             WatchedFolderId = _testFolder.Id
         }).ToList();
 
-        await _photoRepository.AddPhotosAsync(photos);
+        await _photoRepository.AddPhotosAsync(photos, CancellationToken.None);
 
         // Apply a filter
         var filtered = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id && p.FileName.Contains("all_00"))
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.NotEmpty(filtered);
 
         // Clear filter (reload all)
         var allPhotos = await _db.Photos
             .Where(p => p.WatchedFolderId == _testFolder.Id)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
 
         Assert.Equal(15, allPhotos.Count);
     }
@@ -496,23 +495,23 @@ public sealed class LibraryGridTests : IDisposable
         };
 
         _db.Photos.Add(photo);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
-        var initial = await _db.Photos.FirstAsync(p => p.Id == photo.Id);
+        var initial = await _db.Photos.FirstAsync(p => p.Id == photo.Id, CancellationToken.None);
         Assert.Equal(ProcessingStatus.Unprocessed, initial.Status);
 
         // Change status to Processing
         initial.Status = ProcessingStatus.Processing;
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
-        var processing = await _db.Photos.FirstAsync(p => p.Id == photo.Id);
+        var processing = await _db.Photos.FirstAsync(p => p.Id == photo.Id, CancellationToken.None);
         Assert.Equal(ProcessingStatus.Processing, processing.Status);
 
         // Change status to Processed
         processing.Status = ProcessingStatus.Processed;
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
-        var processed = await _db.Photos.FirstAsync(p => p.Id == photo.Id);
+        var processed = await _db.Photos.FirstAsync(p => p.Id == photo.Id, CancellationToken.None);
         Assert.Equal(ProcessingStatus.Processed, processed.Status);
     }
 

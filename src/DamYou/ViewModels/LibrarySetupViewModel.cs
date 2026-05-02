@@ -23,7 +23,13 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
     private bool _isComplete;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanComplete))]
     private bool _isBusy;
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        CompleteSetupCommand.NotifyCanExecuteChanged();
+    }
 
     [ObservableProperty]
     private bool _isImporting;
@@ -49,6 +55,8 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
 
     public bool CanComplete => SelectedFolders.Count > 0 && !IsBusy;
 
+    private bool CanCompleteSetup() => CanComplete;
+
     public LibrarySetupViewModel(
         IFolderRepository folderRepository,
         IFolderPickerService folderPickerService,
@@ -61,6 +69,7 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
         {
             FolderCount = SelectedFolders.Count;
             OnPropertyChanged(nameof(CanComplete));
+            CompleteSetupCommand.NotifyCanExecuteChanged();
         };
     }
 
@@ -80,7 +89,7 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
         SelectedFolders.Remove(path);
     }
 
-    [RelayCommand(CanExecute = nameof(CanComplete))]
+    [RelayCommand(CanExecute = nameof(CanCompleteSetup))]
     private async Task CompleteSetupAsync()
     {
         if (!CanComplete) return;

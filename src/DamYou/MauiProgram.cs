@@ -16,6 +16,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+#pragma warning disable HAA0301 // Closure Allocation Source
         builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
@@ -23,6 +24,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+#pragma warning restore HAA0301 // Closure Allocation Source
 
         // Database
         var dbPath = Path.Combine(
@@ -31,8 +33,10 @@ public static class MauiProgram
             "dam-you.db");
         Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
 
+#pragma warning disable HAA0301 // Closure Allocation Source
         builder.Services.AddDbContext<DamYouDbContext>(options =>
             options.UseSqlite($"Data Source={dbPath}"));
+#pragma warning restore HAA0301 // Closure Allocation Source
 
         // Repositories
         builder.Services.AddScoped<IFolderRepository, FolderRepository>();

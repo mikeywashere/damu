@@ -54,12 +54,9 @@
                 <VerticalStackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Folders}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:PhotoFolderViewModel">
-                            <Border StrokeThickness="0,0,0,1"
-                                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}}"
-                                    Padding="0">
-                                <Grid ColumnDefinitions="*,Auto,Auto"
-                                      ColumnSpacing="12"
-                                      Padding="8">
+                            <Grid ColumnDefinitions="*,Auto,Auto"
+                                  ColumnSpacing="12"
+                                  Padding="8">
                                 <!-- Folder Path (truncated) -->
                                 <Label Grid.Column="0"
                                        Text="{Binding Path}"
@@ -82,8 +79,12 @@
                                         WidthRequest="40"
                                         HeightRequest="40"
                                         FontSize="16" />
+                                <!-- Bottom separator line -->
+                                <BoxView Grid.ColumnSpan="3"
+                                         HeightRequest="1"
+                                         Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                                         VerticalOptions="End" />
                             </Grid>
-                            </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
@@ -91,18 +92,18 @@
         </VerticalStackLayout>
 
         <!-- Action Buttons -->
-        <HorizontalStackLayout Grid.Row="2" Spacing="12" HorizontalOptions="FillAndExpand">
-            <Button Text="➕ Add Folder"
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="➕ Add Folder"
                     Command="{Binding AddFolderCommand}"
                     Padding="12"
-                    FontSize="12"
-                    HorizontalOptions="FillAndExpand" />
-            <Button Text="✓ Done"
+                    FontSize="12" />
+            <Button Grid.Column="1"
+                    Text="✓ Done"
                     Clicked="OnDoneClicked"
                     Padding="12"
-                    FontSize="12"
-                    HorizontalOptions="FillAndExpand" />
-        </HorizontalStackLayout>
+                    FontSize="12" />
+        </Grid>
 
     </Grid>
 </ContentPage>

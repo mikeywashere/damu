@@ -1,8 +1,8 @@
 using DamYou.Data;
+using DamYou.Data.Analysis;
 using DamYou.Data.Entities;
 using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
-using DamYou.Data.Analysis;
 using DamYou.Tests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -48,10 +48,10 @@ public sealed class LibraryScanServiceTests : IDisposable
     {
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
         var scanTask = await _db.PipelineTasks
-            .FirstOrDefaultAsync(t => t.TaskName == "Scan Library");
+            .FirstOrDefaultAsync(t => t.TaskName == "Scan Library", CancellationToken.None);
         Assert.NotNull(scanTask);
     }
 
@@ -61,10 +61,10 @@ public sealed class LibraryScanServiceTests : IDisposable
         _fixture.CreatePhotos(2);
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
         var scanTask = await _db.PipelineTasks
-            .SingleAsync(t => t.TaskName == "Scan Library");
+            .SingleAsync(t => t.TaskName == "Scan Library", CancellationToken.None);
         Assert.Equal(PipelineTaskStatus.Completed, scanTask.Status);
     }
 
@@ -74,11 +74,11 @@ public sealed class LibraryScanServiceTests : IDisposable
         _fixture.CreatePhotos(3);
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
         var processPhotoTasks = await _db.PipelineTasks
             .Where(t => t.TaskName == "Process Photo")
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Equal(3, processPhotoTasks.Count);
     }
 
@@ -88,9 +88,9 @@ public sealed class LibraryScanServiceTests : IDisposable
         _fixture.CreatePhotos(3);
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
-        var photos = await _db.Photos.ToListAsync();
+        var photos = await _db.Photos.ToListAsync(CancellationToken.None);
         Assert.All(photos, p => Assert.Equal(ProcessingStatus.Unprocessed, p.Status));
     }
 
@@ -101,7 +101,7 @@ public sealed class LibraryScanServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         // Pre-populate a Photo and an existing Queued task for it
-        var folder = (await _folderRepo.GetActiveFoldersAsync()).First();
+        var folder = (await _folderRepo.GetActiveFoldersAsync(CancellationToken.None)).First();
         var photo = new Photo
         {
             WatchedFolderId = folder.Id,
@@ -112,7 +112,7 @@ public sealed class LibraryScanServiceTests : IDisposable
             DateIndexed = DateTime.UtcNow
         };
         _db.Photos.Add(photo);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
         _db.PipelineTasks.Add(new PipelineTask
         {
@@ -120,13 +120,13 @@ public sealed class LibraryScanServiceTests : IDisposable
             PhotoId = photo.Id,
             Status = PipelineTaskStatus.Queued
         });
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
         var processPhotoTasks = await _db.PipelineTasks
             .Where(t => t.TaskName == "Process Photo")
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
         Assert.Single(processPhotoTasks);
     }
 
@@ -137,7 +137,7 @@ public sealed class LibraryScanServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         // Pre-populate a Photo with no queue task
-        var folder = (await _folderRepo.GetActiveFoldersAsync()).First();
+        var folder = (await _folderRepo.GetActiveFoldersAsync(CancellationToken.None)).First();
         var photo = new Photo
         {
             WatchedFolderId = folder.Id,
@@ -148,13 +148,15 @@ public sealed class LibraryScanServiceTests : IDisposable
             DateIndexed = DateTime.UtcNow
         };
         _db.Photos.Add(photo);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(CancellationToken.None);
 
-        await _sut.ScanAsync();
+        await _sut.ScanAsync(null, CancellationToken.None);
 
+#pragma warning disable HAA0301 // Closure Allocation Source
         var processPhotoTasks = await _db.PipelineTasks
             .Where(t => t.TaskName == "Process Photo" && t.PhotoId == photo.Id)
-            .ToListAsync();
+            .ToListAsync(CancellationToken.None);
+#pragma warning restore HAA0301 // Closure Allocation Source
         Assert.Single(processPhotoTasks);
     }
 
@@ -163,12 +165,15 @@ public sealed class LibraryScanServiceTests : IDisposable
     {
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
-        var ex = await Record.ExceptionAsync(() => _sut.ScanAsync());
+#pragma warning disable HAA0301 // Closure Allocation Source
+        var ex = await Record.ExceptionAsync(() => _sut.ScanAsync(null, CancellationToken.None));
+#pragma warning restore HAA0301 // Closure Allocation Source
 
         Assert.Null(ex);
+#pragma warning disable HAA0301 // Closure Allocation Source
         var processPhotoTasks = await _db.PipelineTasks
-            .Where(t => t.TaskName == "Process Photo")
-            .CountAsync();
+            .CountAsync(CancellationToken.None);
+#pragma warning restore HAA0301 // Closure Allocation Source
         Assert.Equal(0, processPhotoTasks);
     }
 
@@ -179,15 +184,19 @@ public sealed class LibraryScanServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         var reports = new List<ScanProgress>();
+#pragma warning disable HAA0301 // Closure Allocation Source
         var progress = new Progress<ScanProgress>(p => reports.Add(p));
+#pragma warning restore HAA0301 // Closure Allocation Source
 
-        await _sut.ScanAsync(progress);
+        await _sut.ScanAsync(progress, CancellationToken.None);
 
         // Progress<T> posts asynchronously; give it a moment to flush
-        await Task.Delay(50);
+        await Task.Delay(50, CancellationToken.None);
 
         Assert.NotEmpty(reports);
+#pragma warning disable HAA0301 // Closure Allocation Source
         Assert.Contains(reports, r => r.TotalDiscovered > 0);
+#pragma warning restore HAA0301 // Closure Allocation Source
     }
 
     [Fact]
@@ -197,9 +206,13 @@ public sealed class LibraryScanServiceTests : IDisposable
         await AddWatchedFolderAsync(_fixture.RootDirectory);
 
         using var cts = new CancellationTokenSource();
+#pragma warning disable HAA0301 // Closure Allocation Source
         var progress = new Progress<ScanProgress>(_ => cts.Cancel());
+#pragma warning restore HAA0301 // Closure Allocation Source
 
+#pragma warning disable HAA0301 // Closure Allocation Source
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
             () => _sut.ScanAsync(progress, cts.Token));
+#pragma warning restore HAA0301 // Closure Allocation Source
     }
 }
