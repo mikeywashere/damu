@@ -10,11 +10,7 @@
     <Grid RowDefinitions="Auto,*" Padding="12">
 
         <!-- Header: counts and status -->
-        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,12">
-            <Label Text="⏳ Running Tasks"
-                   FontSize="24"
-                   FontAttributes="Bold" />
-            <HorizontalStackLayout Spacing="24">
+        <HorizontalStackLayout Grid.Row="0" Spacing="24" Margin="0,0,0,12">
                 <Label FontSize="13" Opacity="0.7">
                     <Label.FormattedText>
                         <FormattedString>
@@ -32,7 +28,6 @@
                     </Label.FormattedText>
                 </Label>
             </HorizontalStackLayout>
-        </VerticalStackLayout>
 
         <!-- Task list -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding Tasks}">
