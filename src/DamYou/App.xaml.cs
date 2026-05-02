@@ -117,8 +117,8 @@ public partial class App : Application
                 Log.Debug("NavigateFromSplashAsync: MainPage set to AppShell");
             });
 
-            // Route to the appropriate tab: folders if no folders configured, else gallery
-            var route = folders.Count == 0 ? "folders" : "gallery";
+            // Route to gallery tab - always show gallery, even if empty (user can use "Scan Folders" button to add folders)
+            var route = "gallery";
             Log.Debug("NavigateFromSplashAsync: Navigating to route: {Route}", route);
             await Shell.Current.GoToAsync(route);
             
