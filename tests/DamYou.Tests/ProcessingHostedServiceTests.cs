@@ -16,7 +16,7 @@ namespace DamYou.Tests;
 /// - StopAsync stops the timer and cancels processing gracefully
 /// - Timer fires and ProcessQueueAsync is called periodically
 /// - Scoped DbContext is created per processing attempt
-/// - Progress updates flow to ViewModel
+/// - Progress updates flow via IProcessingStateService events
 /// - Error handling doesn't crash the service
 /// </summary>
 public class ProcessingHostedServiceTests : IAsyncLifetime
@@ -25,15 +25,14 @@ public class ProcessingHostedServiceTests : IAsyncLifetime
     private IServiceProvider? _provider;
     private ProcessingHostedService? _service;
     private Mock<IPipelineProcessorService>? _processorMock;
-    private ProcessingStateViewModel? _viewModel;
+    private Mock<IProcessingStateService>? _processingStateServiceMock;
     private Mock<ILogger<ProcessingHostedService>>? _loggerMock;
 
     public async ValueTask InitializeAsync()
     {
         // Setup DI with mocks
         _processorMock = new Mock<IPipelineProcessorService>();
-        var processingWorkerMock = new Mock<IProcessingWorker>();
-        _viewModel = new ProcessingStateViewModel(processingWorkerMock.Object);
+        _processingStateServiceMock = new Mock<IProcessingStateService>();
         _loggerMock = new Mock<ILogger<ProcessingHostedService>>();
 
         // Setup scope factory mock
@@ -55,13 +54,13 @@ public class ProcessingHostedServiceTests : IAsyncLifetime
             .Returns(scopeMock.Object);
 
         _services.AddSingleton(scopeFactoryMock.Object);
-        _services.AddSingleton(_viewModel);
+        _services.AddSingleton(_processingStateServiceMock.Object);
         _services.AddSingleton(_loggerMock.Object);
 
         _provider = _services.BuildServiceProvider();
         _service = new ProcessingHostedService(
             _provider.GetRequiredService<IServiceScopeFactory>(),
-            _provider.GetRequiredService<ProcessingStateViewModel>(),
+            _provider.GetRequiredService<IProcessingStateService>(),
             _provider.GetRequiredService<ILogger<ProcessingHostedService>>()
         );
 
@@ -125,6 +124,12 @@ public class ProcessingHostedServiceTests : IAsyncLifetime
             Times.AtLeastOnce
         );
 
+        // Verify that NotifyProcessingStarted was called
+        _processingStateServiceMock!.Verify(
+            x => x.NotifyProcessingStarted(It.IsAny<int>()),
+            Times.AtLeastOnce
+        );
+
         // Cleanup
         await _service.StopAsync(CancellationToken.None);
     }
@@ -145,8 +150,10 @@ public class ProcessingHostedServiceTests : IAsyncLifetime
         await _service.StopAsync(cts.Token);
 
         // Assert
-        Assert.False(_viewModel!.IsProcessing);
-        Assert.Equal("Complete", _viewModel.StatusText);
+        _processingStateServiceMock!.Verify(
+            x => x.NotifyProcessingStopped(),
+            Times.AtLeastOnce
+        );
     }
 
     [Fact]
@@ -196,7 +203,10 @@ public class ProcessingHostedServiceTests : IAsyncLifetime
         await _service.TriggerProcessingAsync();
 
         // Assert
-        Assert.True(_viewModel!.IsProcessing);
+        _processingStateServiceMock!.Verify(
+            x => x.NotifyProcessingStarted(It.IsAny<int>()),
+            Times.AtLeastOnce
+        );
         _processorMock.Verify(
             x => x.ProcessQueueAsync(
                 It.IsAny<IProgress<AnalysisProgress>>(),

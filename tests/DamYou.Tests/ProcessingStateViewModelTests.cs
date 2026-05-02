@@ -7,23 +7,25 @@ using Xunit;
 namespace DamYou.Tests;
 
 /// <summary>
-/// Tests for ProcessingStateViewModel — property updates and IProgress handling.
+/// Tests for ProcessingStateViewModel — property updates and event handling.
 /// 
 /// Verifies:
 /// - ObservableProperty updates trigger PropertyChanged
 /// - ProgressText is computed correctly
-/// - ReportProgress marshals to MainThread (UI thread safety)
-/// - StartProcessing and StopProcessing work correctly
+/// - Event subscriptions marshal to MainThread (UI thread safety)
+/// - ProcessingStarted, ProgressReported, and ProcessingStopped events work correctly
 /// </summary>
 public class ProcessingStateViewModelTests
 {
     private readonly ProcessingStateViewModel _viewModel;
     private readonly Mock<IProcessingWorker> _processingWorkerMock;
+    private readonly Mock<IProcessingStateService> _processingStateServiceMock;
 
     public ProcessingStateViewModelTests()
     {
         _processingWorkerMock = new Mock<IProcessingWorker>();
-        _viewModel = new ProcessingStateViewModel(_processingWorkerMock.Object);
+        _processingStateServiceMock = new Mock<IProcessingStateService>();
+        _viewModel = new ProcessingStateViewModel(_processingWorkerMock.Object, _processingStateServiceMock.Object);
     }
 
     [Fact]
@@ -38,7 +40,7 @@ public class ProcessingStateViewModelTests
     }
 
     [Fact]
-    public void StartProcessing_Should_Set_IsProcessing_True()
+    public void StartProcessing_Event_Should_Set_IsProcessing_True()
     {
         // Arrange
         var propertyChangedRaised = false;
@@ -49,9 +51,10 @@ public class ProcessingStateViewModelTests
         };
 
         // Act
-        _viewModel.StartProcessing(42);
+        _processingStateServiceMock.Raise(x => x.ProcessingStarted += null, 42);
 
-        // Assert
+        // Assert (allow time for MainThread marshaling)
+        System.Threading.Thread.Sleep(50);
         Assert.True(_viewModel.IsProcessing);
         Assert.Equal(42, _viewModel.TotalItems);
         Assert.Equal(0, _viewModel.CurrentProgress);
@@ -60,10 +63,12 @@ public class ProcessingStateViewModelTests
     }
 
     [Fact]
-    public void StopProcessing_Should_Set_IsProcessing_False()
+    public void StopProcessing_Event_Should_Set_IsProcessing_False()
     {
         // Arrange
-        _viewModel.StartProcessing(42);
+        _processingStateServiceMock.Raise(x => x.ProcessingStarted += null, 42);
+        System.Threading.Thread.Sleep(50); // Wait for main thread marshaling
+        
         var propertyChangedRaised = false;
         _viewModel.PropertyChanged += (s, e) =>
         {
@@ -72,19 +77,22 @@ public class ProcessingStateViewModelTests
         };
 
         // Act
-        _viewModel.StopProcessing();
+        _processingStateServiceMock.Raise(x => x.ProcessingStopped += null);
 
         // Assert
+        System.Threading.Thread.Sleep(50); // Wait for main thread marshaling
         Assert.False(_viewModel.IsProcessing);
         Assert.Equal("Complete", _viewModel.StatusText);
         Assert.True(propertyChangedRaised);
     }
 
     [Fact]
-    public void ReportProgress_Should_Update_Progress_Properties()
+    public void ProgressReported_Event_Should_Update_Progress_Properties()
     {
         // Arrange
-        _viewModel.StartProcessing(100);
+        _processingStateServiceMock.Raise(x => x.ProcessingStarted += null, 100);
+        System.Threading.Thread.Sleep(50); // Wait for main thread marshaling
+        
         var progress = new AnalysisProgress(
             Total: 100,
             Completed: 25,
@@ -93,7 +101,7 @@ public class ProcessingStateViewModelTests
         );
 
         // Act
-        _viewModel.ReportProgress(progress);
+        _processingStateServiceMock.Raise(x => x.ProgressReported += null, progress);
 
         // Assert (allow a small delay for MainThread marshaling)
         System.Threading.Thread.Sleep(50);
@@ -106,10 +114,12 @@ public class ProcessingStateViewModelTests
     public void ProgressText_Should_Update_When_Progress_Changes()
     {
         // Arrange
-        _viewModel.StartProcessing(50);
+        _processingStateServiceMock.Raise(x => x.ProcessingStarted += null, 50);
+        System.Threading.Thread.Sleep(50); // Wait for main thread marshaling
 
         // Act
-        _viewModel.ReportProgress(new(Total: 50, Completed: 10, null, null));
+        _processingStateServiceMock.Raise(x => x.ProgressReported += null, 
+            new AnalysisProgress(Total: 50, Completed: 10, null, null));
 
         // Assert
         System.Threading.Thread.Sleep(50);
@@ -117,10 +127,12 @@ public class ProcessingStateViewModelTests
     }
 
     [Fact]
-    public void ReportProgress_Without_CurrentFile_Should_Use_Pass_Name()
+    public void ProgressReported_Without_CurrentFile_Should_Use_Pass_Name()
     {
         // Arrange
-        _viewModel.StartProcessing(10);
+        _processingStateServiceMock.Raise(x => x.ProcessingStarted += null, 10);
+        System.Threading.Thread.Sleep(50); // Wait for main thread marshaling
+        
         var progress = new AnalysisProgress(
             Total: 10,
             Completed: 3,
@@ -129,7 +141,7 @@ public class ProcessingStateViewModelTests
         );
 
         // Act
-        _viewModel.ReportProgress(progress);
+        _processingStateServiceMock.Raise(x => x.ProgressReported += null, progress);
 
         // Assert
         System.Threading.Thread.Sleep(50);

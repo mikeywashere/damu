@@ -6,13 +6,15 @@ using DamYou.Services;
 namespace DamYou.ViewModels;
 
 /// <summary>
-/// Shared processing state ViewModel — observed by both the status bar UI and the background worker.
-/// Updates flow from the worker's progress reports → ViewModel → UI bindings.
+/// Shared processing state ViewModel — observed by the status bar UI.
+/// Subscribes to events from IProcessingStateService to receive state transitions and progress updates.
+/// Decoupled from the background worker implementation.
 /// Thread-safe: All property updates use MainThread.BeginInvokeOnMainThread() to marshal to UI thread.
 /// </summary>
 public sealed partial class ProcessingStateViewModel : ObservableObject
 {
     private readonly IProcessingWorker _processingWorker;
+    private readonly IProcessingStateService _processingStateService;
     private bool _isProcessingNow = false;
 
     [ObservableProperty]
@@ -35,9 +37,15 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     public string ProgressText =>
         TotalItems == 0 ? "Idle" : $"{CurrentProgress}/{TotalItems}";
 
-    public ProcessingStateViewModel(IProcessingWorker processingWorker)
+    public ProcessingStateViewModel(IProcessingWorker processingWorker, IProcessingStateService processingStateService)
     {
         _processingWorker = processingWorker;
+        _processingStateService = processingStateService;
+
+        // Subscribe to processing state events
+        _processingStateService.ProcessingStarted += OnProcessingStarted;
+        _processingStateService.ProcessingStopped += OnProcessingStopped;
+        _processingStateService.ProgressReported += OnProgressReported;
     }
 
     /// <summary>
@@ -66,10 +74,10 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     private bool CanStartProcessing => !IsProcessing && !_isProcessingNow;
 
     /// <summary>
-    /// Called by the background worker to report analysis progress.
+    /// Invoked when the worker reports progress.
     /// Marshals updates to the main thread for safe UI binding.
     /// </summary>
-    public void ReportProgress(AnalysisProgress progress)
+    private void OnProgressReported(AnalysisProgress progress)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -84,24 +92,24 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Called by the worker when processing starts.
+    /// Invoked when the worker starts processing.
     /// </summary>
-    public void StartProcessing(int totalCount)
+    private void OnProcessingStarted(int totalCount)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
             IsProcessing = true;
             CurrentProgress = 0;
             TotalItems = totalCount;
-            StatusText = $"Processing photos...";
+            StatusText = "Processing photos...";
             StartProcessingCommand.NotifyCanExecuteChanged();
         });
     }
 
     /// <summary>
-    /// Called by the worker when processing completes or stops.
+    /// Invoked when the worker stops or completes processing.
     /// </summary>
-    public void StopProcessing()
+    private void OnProcessingStopped()
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {

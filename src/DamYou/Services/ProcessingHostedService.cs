@@ -1,5 +1,4 @@
 using DamYou.Data.Analysis;
-using DamYou.ViewModels;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -15,24 +14,24 @@ namespace DamYou.Services;
 /// Architecture:
 /// - Uses IServiceScopeFactory to create a scoped DbContext for each ProcessQueueAsync call
 /// - Polls every 2 seconds to check for pending work
-/// - Routes progress events to ProcessingStateViewModel for UI binding
+/// - Routes progress events via IProcessingStateService events for UI binding
 /// - Respects CancellationToken for graceful shutdown
 /// </summary>
 public sealed class ProcessingHostedService : IHostedService, IProcessingWorker
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ProcessingStateViewModel _processingState;
+    private readonly IProcessingStateService _processingStateService;
     private readonly ILogger<ProcessingHostedService> _logger;
     private Timer? _processingTimer;
     private CancellationTokenSource? _stoppingCts;
 
     public ProcessingHostedService(
         IServiceScopeFactory scopeFactory,
-        ProcessingStateViewModel processingState,
+        IProcessingStateService processingStateService,
         ILogger<ProcessingHostedService> logger)
     {
         _scopeFactory = scopeFactory;
-        _processingState = processingState;
+        _processingStateService = processingStateService;
         _logger = logger;
     }
 
@@ -69,7 +68,7 @@ public sealed class ProcessingHostedService : IHostedService, IProcessingWorker
         _stoppingCts?.Cancel();
         _stoppingCts?.Dispose();
 
-        _processingState.StopProcessing();
+        _processingStateService.NotifyProcessingStopped();
     }
 
     /// <summary>
@@ -92,40 +91,38 @@ public sealed class ProcessingHostedService : IHostedService, IProcessingWorker
             var pendingCount = await processor.GetPendingCountAsync(_stoppingCts.Token);
             if (pendingCount == 0)
             {
-                // No work, idle
-                if (_processingState.IsProcessing)
-                {
-                    _processingState.StopProcessing();
-                }
+                // No work, idle — check if we were processing and stop
+                _processingStateService.NotifyProcessingStopped();
                 return;
             }
 
             // Start processing
-            _processingState.StartProcessing(pendingCount);
+            _processingStateService.NotifyProcessingStarted(pendingCount);
 
-            // Create a progress reporter that updates the ViewModel
+            // Create a progress reporter that broadcasts to subscribers
             var progress = new Progress<AnalysisProgress>(p =>
             {
-                _processingState.ReportProgress(p);
+                _processingStateService.NotifyProgress(p);
             });
 
             // Process the queue
             await processor.ProcessQueueAsync(progress, _stoppingCts.Token);
 
             // When done, mark as complete
-            _processingState.StopProcessing();
+            _processingStateService.NotifyProcessingStopped();
             logger.LogInformation($"Pipeline processing completed. {pendingCount} items processed.");
         }
         catch (OperationCanceledException)
         {
             _logger.LogInformation("Pipeline processing cancelled");
-            _processingState.StopProcessing();
+            _processingStateService.NotifyProcessingStopped();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during pipeline processing");
             // Don't update UI with error — log internally only
             // Processing will retry on next timer tick
+            _processingStateService.NotifyProcessingStopped();
         }
     }
 
