@@ -86,6 +86,10 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.0.20" />
 		<PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.0.12" />
 		<PackageReference Include="Microsoft.WindowsAppSDK.ML" Version="2.0.300" />
+		<PackageReference Include="Serilog" Version="3.*" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.*" />
+		<PackageReference Include="Serilog.Sinks.Debug" Version="2.*" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="7.*" />
 		<PackageReference Include="System.Composition" Version="10.0.7" />
 		<PackageReference Include="System.Numerics.Tensors" Version="10.0.7" />
 	</ItemGroup>

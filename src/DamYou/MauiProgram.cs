@@ -8,6 +8,7 @@ using DamYou.ViewModels;
 using DamYou.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace DamYou;
 
@@ -15,6 +16,29 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        // Parse command-line arguments early
+        var args = Environment.GetCommandLineArgs();
+        
+        // DEBUG: Log raw command-line arguments to Visual Studio output
+        Debug.WriteLine($"[MauiProgram] Environment.GetCommandLineArgs() returned {args.Length} arguments:");
+        for (int i = 0; i < args.Length; i++)
+        {
+            Debug.WriteLine($"  [{i}]: {args[i]}");
+        }
+        
+        var parsedArgs = CommandLineParser.Parse(args);
+        Debug.WriteLine($"[MauiProgram] Parsed log file path: {parsedArgs.LogFilePath ?? "(null)"}");
+        
+        LoggingService.ConfigureLogging(parsedArgs.LogFilePath);
+        var logger = LoggingService.GetLogger();
+        
+        logger.Information("=== DAMu App Initialization Started ===");
+        logger.Information("Command-line arguments: {Args}", string.Join(" ", args));
+        if (parsedArgs.LogFilePath != null)
+        {
+            logger.Information("Logging to: {LogPath}", parsedArgs.LogFilePath);
+        }
+
         var builder = MauiApp.CreateBuilder();
 #pragma warning disable HAA0301 // Closure Allocation Source
         builder
@@ -27,11 +51,13 @@ public static class MauiProgram
 #pragma warning restore HAA0301 // Closure Allocation Source
 
         // Database
+        logger.Debug("Initializing database context...");
         var dbPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "DamYou",
             "dam-you.db");
         Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+        logger.Debug("Database path: {DbPath}", dbPath);
 
 #pragma warning disable HAA0301 // Closure Allocation Source
         builder.Services.AddDbContext<DamYouDbContext>(options =>
@@ -111,14 +137,26 @@ public static class MauiProgram
         var app = builder.Build();
 
         // Run migrations on startup
-        using var scope = app.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
-        db.Database.Migrate();
+        logger.Debug("Running database migrations...");
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
+            db.Database.Migrate();
+            logger.Information("Database migrations completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Database migration failed");
+            throw;
+        }
 
         // Register shell routes for DI-aware navigation
+        logger.Debug("Registering shell routes...");
         Routing.RegisterRoute("gallery", typeof(GalleryView));
         Routing.RegisterRoute("folders", typeof(FoldersView));
         Routing.RegisterRoute("running-tasks", typeof(RunningTasksView));
+        logger.Information("=== MauiProgram initialization completed ===");
 
         return app;
     }
