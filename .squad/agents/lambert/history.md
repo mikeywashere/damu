@@ -9,6 +9,11 @@
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
 
+### 2026-05-02 — Icon and Splash Screen Update
+
+- **Icon resource discovery.** MAUI's Resizetizer automatically includes all files matching `<MauiImage Include="Resources\Images\*" />` in the csproj. Simply copying a properly-named PNG file (lowercase alphanumeric) to Resources/Images/ makes it immediately available as a XAML Source resource.
+- **Splash image update flow.** To change the splash image in SplashScreenView.xaml, update the Source binding from `Source="oldname"` to `Source="newname"` (no file extension). The image must exist in Resources/Images/ with a matching lowercase name. No csproj changes are needed.
+
 ### 2026-05-02 — Splash Screen Implementation
 
 - **SplashScreenView is a ContentPage with no navigation bar.** It displays the DAMu.png image centered with AspectFit. The image file must be in Resources/Images/ with a lowercase name (MAUI Resizetizer requirement).
