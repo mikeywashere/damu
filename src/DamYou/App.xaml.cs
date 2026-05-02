@@ -30,16 +30,18 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        // Always start with splash screen
+        // Start with splash screen (wrapped in NavigationPage temporarily)
         var splashPage = _services.GetRequiredService<SplashScreenView>();
-        var window = new Window(new NavigationPage(splashPage))
+        var navPage = new NavigationPage(splashPage);
+        
+        var window = new Window(navPage)
         {
             Title = "DAMu",
             MinimumWidth = 800,
             MinimumHeight = 600,
         };
 
-        // After 2 seconds, transition to Shell with tabs
+        // After 2 seconds, transition to AppShell (NOT wrapped in NavigationPage)
         _ = SplashTransitionAsync();
 
         return window;
@@ -65,6 +67,7 @@ public partial class App : Application
     /// <summary>
     /// Navigate from splash screen to AppShell with tabs.
     /// Replaces the entire window with the Shell-based tabbed interface.
+    /// AppShell must NOT be wrapped in NavigationPage.
     /// </summary>
     private async Task NavigateFromSplashAsync()
     {
@@ -73,9 +76,12 @@ public partial class App : Application
             var folderRepository = _services.GetRequiredService<IFolderRepository>();
             var folders = await folderRepository.GetActiveFoldersAsync();
 
-            // Get the AppShell and set it as the main shell
+            // Replace the window's page with AppShell directly (NOT wrapped in NavigationPage)
             var appShell = _services.GetRequiredService<AppShell>();
-            Application.Current!.MainPage = appShell;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Application.Current!.MainPage = appShell;
+            });
 
             // Route to the appropriate tab: folders if no folders configured, else gallery
             var route = folders.Count == 0 ? "folders" : "gallery";
