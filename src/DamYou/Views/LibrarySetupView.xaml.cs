@@ -8,20 +8,25 @@ public partial class LibrarySetupModal : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        
+        // When setup completes, close modal and navigate to library view
+        viewModel.PropertyChanged += async (s, e) =>
+        {
+            if (e.PropertyName == nameof(LibrarySetupViewModel.IsComplete) && viewModel.IsComplete)
+            {
+                await Navigation.PopModalAsync();
+                if (Application.Current is App app)
+                {
+                    await app.NavigateAfterSetupAsync();
+                }
+            }
+        };
     }
 
     /// <summary>
     /// Cancel button closes the modal without making changes.
     /// </summary>
     private async void OnCancelClicked(object? sender, EventArgs e)
-    {
-        await Navigation.PopModalAsync();
-    }
-
-    /// <summary>
-    /// Done button closes the modal. ViewModel should sync folder state on closing.
-    /// </summary>
-    private async void OnDoneClicked(object? sender, EventArgs e)
     {
         await Navigation.PopModalAsync();
     }

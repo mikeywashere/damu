@@ -4,12 +4,11 @@ using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
 using DamYou.Models;
 using DamYou.Services;
-using DamYou.Views;
 using System.Collections.ObjectModel;
 
 namespace DamYou.ViewModels;
 
-public sealed partial class LibraryViewModel : ObservableObject
+public sealed partial class GalleryViewModel : ObservableObject
 {
     private readonly ILibraryScanService _scanService;
     private readonly IPipelineTaskRepository _taskRepository;
@@ -30,9 +29,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     private bool _isScanning;
 
     [ObservableProperty]
-    private int _queueDepth;
-
-    [ObservableProperty]
     private string? _scanCurrentFolder;
 
     [ObservableProperty]
@@ -47,9 +43,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     private string _searchText = string.Empty;
 
     [ObservableProperty]
-    private bool _isSearchExpanded;
-
-    [ObservableProperty]
     private bool _isPropertiesPanelVisible;
 
     [ObservableProperty]
@@ -61,15 +54,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private int _photoCount;
 
-    [ObservableProperty]
-    private bool _showFolderModal;
-
     public string ScanProgressText =>
         IsScanning && ScanDiscovered == 0
             ? "Scanning…"
             : $"Discovered {ScanDiscovered} files, enqueued {ScanEnqueued}";
 
-    public LibraryViewModel(
+    public GalleryViewModel(
         ILibraryScanService scanService,
         IPipelineTaskRepository taskRepository,
         IPhotoRepository photoRepository,
@@ -142,20 +132,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Called when the view loads to fetch the first batch of photos and check if modal should show.
-    /// </summary>
     [RelayCommand]
     private async Task InitializeAsync(CancellationToken ct)
     {
         await LoadPhotosAsync(ct);
-        var totalPhotos = await _photoRepository.CountAsync(ct);
-        ShowFolderModal = totalPhotos == 0;
     }
 
-    /// <summary>
-    /// Loads the initial batch of photos or searches based on current search text.
-    /// </summary>
     private async Task LoadPhotosAsync(CancellationToken ct)
     {
         if (IsLoadingMore)
@@ -175,7 +157,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             }
             else
             {
-                // For search, we need to get a count with the search filter
                 photos = await _photoRepository.SearchAsync(_currentSearchText, 0, PageSize, ct);
             }
 
@@ -193,9 +174,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Loads the next batch of photos (lazy loading on scroll).
-    /// </summary>
     [RelayCommand]
     private async Task LoadMorePhotosAsync(CancellationToken ct)
     {
@@ -229,9 +207,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Called when search text changes to filter the grid.
-    /// </summary>
     [RelayCommand]
     private async Task SearchTextChangedAsync(CancellationToken ct)
     {
@@ -239,9 +214,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         await LoadPhotosAsync(ct);
     }
 
-    /// <summary>
-    /// Handles Ctrl+Wheel to resize grid cells.
-    /// </summary>
     public void ResizeGrid(double delta)
     {
         const double minSize = 80;
@@ -252,9 +224,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         CurrentGridCellSize = Math.Clamp(newSize, minSize, maxSize);
     }
 
-    /// <summary>
-    /// Toggles the properties panel visibility.
-    /// </summary>
     [RelayCommand]
     private void TogglePropertiesPanel()
     {
@@ -279,7 +248,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             });
 
             await _scanService.ScanAsync(progress, ct);
-            await RefreshQueueDepthAsync();
             await LoadPhotosAsync(ct);
         }
         catch (OperationCanceledException)
@@ -294,27 +262,5 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             IsScanning = false;
         }
-    }
-
-    [RelayCommand]
-    private async Task ViewTasksAsync()
-    {
-        var tasksView = _services.GetRequiredService<TasksView>();
-        if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
-            await nav.PushAsync(tasksView);
-    }
-
-    [RelayCommand]
-    private async Task ManageFoldersAsync()
-    {
-        var manageFoldersModal = _services.GetRequiredService<ManageFoldersModal>();
-        if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
-            await nav.PushAsync(manageFoldersModal);
-    }
-
-    [RelayCommand]
-    private async Task RefreshQueueDepthAsync()
-    {
-        QueueDepth = await _taskRepository.GetQueueDepthAsync();
     }
 }

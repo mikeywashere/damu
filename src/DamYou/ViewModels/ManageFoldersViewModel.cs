@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DamYou.Data.Entities;
+using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
 using DamYou.Services;
 using System.Collections.ObjectModel;
@@ -119,6 +120,34 @@ public sealed partial class ManageFoldersViewModel : ObservableObject
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error deleting folder: {ex}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task BackAsync(CancellationToken ct)
+    {
+        // Trigger a library scan to index photos from newly added folders
+        try
+        {
+            var scanService = Application.Current?.Handler?.MauiContext?.Services.GetRequiredService<ILibraryScanService>();
+            if (scanService != null)
+            {
+                var progress = new Progress<ScanProgress>(p =>
+                {
+                    // Could show progress here if needed
+                });
+                await scanService.ScanAsync(progress, ct);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error scanning library: {ex}");
+        }
+        
+        // Navigate back
+        if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
+        {
+            await nav.PopAsync();
         }
     }
 }

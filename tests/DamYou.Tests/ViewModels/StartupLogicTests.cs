@@ -1,5 +1,6 @@
 using DamYou.Data.Pipeline;
 using DamYou.Data.Repositories;
+using DamYou.Services;
 using DamYou.ViewModels;
 using Moq;
 
@@ -20,8 +21,9 @@ public sealed class StartupLogicTests
         var mockTaskRepo = new Mock<IPipelineTaskRepository>();
         mockTaskRepo.Setup(r => r.GetQueueDepthAsync())
             .ReturnsAsync(0);
+        var mockImportProgressService = new Mock<IImportProgressService>();
 
-        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, new MockServiceProvider());
+        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, mockImportProgressService.Object, new MockServiceProvider());
 
         await vm.InitializeCommand.ExecuteAsync(CancellationToken.None);
 
@@ -52,8 +54,9 @@ public sealed class StartupLogicTests
         var mockTaskRepo = new Mock<IPipelineTaskRepository>();
         mockTaskRepo.Setup(r => r.GetQueueDepthAsync())
             .ReturnsAsync(0);
+        var mockImportProgressService = new Mock<IImportProgressService>();
 
-        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, new MockServiceProvider());
+        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, mockImportProgressService.Object, new MockServiceProvider());
 
         await vm.InitializeCommand.ExecuteAsync(CancellationToken.None);
 
@@ -74,8 +77,9 @@ public sealed class StartupLogicTests
         var mockTaskRepo = new Mock<IPipelineTaskRepository>();
         mockTaskRepo.Setup(r => r.GetQueueDepthAsync())
             .ReturnsAsync(0);
+        var mockImportProgressService = new Mock<IImportProgressService>();
 
-        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, new MockServiceProvider());
+        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, mockImportProgressService.Object, new MockServiceProvider());
 
         await vm.InitializeCommand.ExecuteAsync(CancellationToken.None);
 
@@ -98,8 +102,9 @@ public sealed class StartupLogicTests
         var mockTaskRepo = new Mock<IPipelineTaskRepository>();
         mockTaskRepo.Setup(r => r.GetQueueDepthAsync())
             .ReturnsAsync(0);
+        var mockImportProgressService = new Mock<IImportProgressService>();
 
-        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, new MockServiceProvider());
+        var vm = new LibraryViewModel(mockScanService.Object, mockTaskRepo.Object, mockPhotoRepo.Object, mockImportProgressService.Object, new MockServiceProvider());
 
         await vm.RescanLibraryCommand.ExecuteAsync(CancellationToken.None);
 

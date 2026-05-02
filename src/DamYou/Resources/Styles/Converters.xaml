@@ -4,4 +4,5 @@
                     xmlns:conv="clr-namespace:DamYou.Converters">
     <conv:IntToBoolConverter x:Key="IntToBoolConverter" />
     <conv:InvertBoolConverter x:Key="InvertBoolConverter" />
+    <conv:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
 </ResourceDictionary>

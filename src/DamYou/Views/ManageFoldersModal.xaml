@@ -92,15 +92,10 @@
         </VerticalStackLayout>
 
         <!-- Action Buttons -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+        <Grid Grid.Row="2" ColumnDefinitions="*" ColumnSpacing="12">
             <Button Grid.Column="0"
                     Text="➕ Add Folder"
                     Command="{Binding AddFolderCommand}"
-                    Padding="12"
-                    FontSize="12" />
-            <Button Grid.Column="1"
-                    Text="✓ Done"
-                    Clicked="OnDoneClicked"
                     Padding="12"
                     FontSize="12" />
         </Grid>

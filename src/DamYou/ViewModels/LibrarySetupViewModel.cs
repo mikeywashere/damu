@@ -13,6 +13,7 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
     private readonly IFolderPickerService _folderPickerService;
     private readonly IPhotoImportService _importService;
     private readonly IProcessingWorker _processingWorker;
+    private readonly IImportProgressService _importProgressService;
 
     public ObservableCollection<string> SelectedFolders { get; } = new();
 
@@ -62,12 +63,14 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
         IFolderRepository folderRepository,
         IFolderPickerService folderPickerService,
         IPhotoImportService importService,
-        IProcessingWorker processingWorker)
+        IProcessingWorker processingWorker,
+        IImportProgressService importProgressService)
     {
         _folderRepository = folderRepository;
         _folderPickerService = folderPickerService;
         _importService = importService;
         _processingWorker = processingWorker;
+        _importProgressService = importProgressService;
         SelectedFolders.CollectionChanged += (_, _) =>
         {
             FolderCount = SelectedFolders.Count;
@@ -107,19 +110,33 @@ public sealed partial class LibrarySetupViewModel : ObservableObject
                 ImportTotal = p.TotalDiscovered;
                 ImportProcessed = p.Processed;
                 ImportCurrentFile = p.CurrentFile;
+                
+                // Notify subscribers about import progress
+                _importProgressService.NotifyImportProgress(p.TotalDiscovered, p.Processed, p.CurrentFile);
             });
 
-            await _importService.ImportAsync(progress);
-            
-            // Trigger immediate processing now that import is complete
-            await _processingWorker.TriggerProcessingAsync();
+            // Fire off import as background task without blocking the UI
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    _importProgressService.NotifyImportStarted(0);
+                    await _importService.ImportAsync(progress);
+                    // Trigger immediate processing now that import is complete
+                    await _processingWorker.TriggerProcessingAsync();
+                    _importProgressService.NotifyImportCompleted();
+                }
+                finally
+                {
+                    IsImporting = false;
+                }
+            });
             
             IsComplete = true;
         }
         finally
         {
             IsBusy = false;
-            IsImporting = false;
         }
     }
 }

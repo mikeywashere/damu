@@ -6,18 +6,15 @@ using Microsoft.Maui.Graphics;
 
 namespace DamYou.Views;
 
-public partial class LibraryView : ContentPage
+public partial class GalleryView : ContentPage
 {
-    private readonly LibraryViewModel _vm;
-    private readonly IServiceProvider _services;
-    private bool _hasShownInitialModal = false;
+    private readonly GalleryViewModel _vm;
 
-    public LibraryView(LibraryViewModel vm, IServiceProvider services)
+    public GalleryView(GalleryViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
         _vm = vm;
-        _services = services;
 
         // Set up collection change notification
         _vm.GridPhotos.CollectionChanged += OnGridPhotosChanged;
@@ -31,14 +28,6 @@ public partial class LibraryView : ContentPage
     {
         await _vm.InitializeCommand.ExecuteAsync(null);
         PopulateGrid();
-        
-        // Show the initial folder modal if no photos
-        if (_vm.ShowFolderModal && !_hasShownInitialModal)
-        {
-            _hasShownInitialModal = true;
-            var modal = _services.GetRequiredService<ManageFoldersModal>();
-            await Navigation.PushAsync(modal);
-        }
     }
 
     /// <summary>
@@ -182,23 +171,17 @@ public partial class LibraryView : ContentPage
     /// </summary>
     private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(LibraryViewModel.CurrentGridCellSize))
+        if (e.PropertyName == nameof(GalleryViewModel.CurrentGridCellSize))
         {
             RefreshGridDisplay();
         }
     }
 
-    /// <summary>
-    /// Placeholder for processing status filter changes.
-    /// </summary>
     private void OnProcessingStatusChanged(object? sender, EventArgs e)
     {
         // TODO: Implement filtering by processing status
     }
 
-    /// <summary>
-    /// Placeholder for sort order changes.
-    /// </summary>
     private void OnSortChanged(object? sender, EventArgs e)
     {
         // TODO: Implement sorting by different criteria

@@ -39,7 +39,7 @@ public partial class App : Application
             MinimumHeight = 600,
         };
 
-        // After 2 seconds, transition to the main page
+        // After 2 seconds, transition to TabbedView
         _ = SplashTransitionAsync();
 
         return window;
@@ -63,8 +63,7 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Navigate from splash screen to the appropriate main page (LibraryView or setup).
-    /// Called after 2-second splash delay.
+    /// Navigate from splash screen to TabbedView (main shell).
     /// </summary>
     private async Task NavigateFromSplashAsync()
     {
@@ -72,21 +71,22 @@ public partial class App : Application
         {
             var folderRepository = _services.GetRequiredService<IFolderRepository>();
             var folders = await folderRepository.GetActiveFoldersAsync();
-            var targetPage = folders.Count > 0
-                ? (Page)_services.GetRequiredService<LibraryView>()
-                : _services.GetRequiredService<LibrarySetupModal>();
+            
+            // If no folders, show folders tab; otherwise show gallery tab
+            var tabbedView = _services.GetRequiredService<TabbedView>();
+            var vm = tabbedView.BindingContext as TabbedViewModel;
+            if (vm != null && folders.Count == 0)
+            {
+                vm.SelectedTabIndex = 1; // Folders tab
+            }
+            else if (vm != null)
+            {
+                vm.SelectedTabIndex = 0; // Gallery tab
+            }
 
             if (Windows.Count > 0 && Windows[0].Page is NavigationPage nav)
             {
-                // Modal pages must be pushed as modals; regular pages use standard navigation
-                if (targetPage is LibrarySetupModal or ManageFoldersModal)
-                {
-                    await MainPage!.Navigation.PushModalAsync(targetPage);
-                }
-                else
-                {
-                    await nav.PushAsync(targetPage);
-                }
+                await nav.PushAsync(tabbedView);
             }
         }
         catch (Exception ex)
@@ -97,23 +97,8 @@ public partial class App : Application
 
     public async Task NavigateAfterSetupAsync()
     {
-        var folderRepository = _services.GetRequiredService<IFolderRepository>();
-        var folders = await folderRepository.GetActiveFoldersAsync();
-        var targetPage = folders.Count > 0
-            ? (Page)_services.GetRequiredService<LibraryView>()
-            : _services.GetRequiredService<LibrarySetupModal>();
-
-        if (Windows.Count > 0 && Windows[0].Page is NavigationPage nav)
-        {
-            // Modal pages must be pushed as modals; regular pages use standard navigation
-            if (targetPage is LibrarySetupModal or ManageFoldersModal)
-            {
-                await MainPage!.Navigation.PushModalAsync(targetPage);
-            }
-            else
-            {
-                await nav.PushAsync(targetPage);
-            }
-        }
+        // Legacy method kept for compatibility with LibrarySetupModal
+        // In tabbed navigation, this just closes the modal and returns to TabbedView
+        await Task.CompletedTask;
     }
 }

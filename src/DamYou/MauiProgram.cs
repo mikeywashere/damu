@@ -71,13 +71,18 @@ public static class MauiProgram
         builder.Services.AddTransient<LibraryViewModel>();
         builder.Services.AddTransient<ManageFoldersViewModel>();
         builder.Services.AddTransient<TasksViewModel>();
-        builder.Services.AddSingleton<ProcessingStateViewModel>(); // Shared state for UI + worker
+        builder.Services.AddSingleton<TabbedViewModel>();
+        builder.Services.AddTransient<GalleryViewModel>();
+        builder.Services.AddTransient<FoldersViewModel>();
+        builder.Services.AddTransient<RunningTasksViewModel>();
+        builder.Services.AddSingleton<IProcessingStateService, ProcessingStateService>(); // Event broadcaster for processing state
+        builder.Services.AddSingleton<IImportProgressService, ImportProgressService>(); // Event broadcaster for import progress
+        builder.Services.AddSingleton<ProcessingStateViewModel>(); // UI state ViewModel
 
         // Background processing
         builder.Services.AddLogging(c => c.AddDebug());
-        builder.Services.AddSingleton<ProcessingHostedService>();
-        builder.Services.AddSingleton<IProcessingWorker>(sp => sp.GetRequiredService<ProcessingHostedService>());
-        builder.Services.AddHostedService<ProcessingHostedService>(sp => sp.GetRequiredService<ProcessingHostedService>());
+        builder.Services.AddSingleton<IProcessingWorker, ProcessingHostedService>();
+        builder.Services.AddHostedService(sp => sp.GetRequiredService<ProcessingHostedService>());
 
         // Views
         builder.Services.AddTransient<SplashScreenView>();
@@ -85,10 +90,20 @@ public static class MauiProgram
         builder.Services.AddTransient<LibraryView>();
         builder.Services.AddTransient<ManageFoldersModal>();
         builder.Services.AddTransient<TasksView>();
+        builder.Services.AddSingleton<TabbedView>();
+        builder.Services.AddTransient<GalleryView>();
+        builder.Services.AddTransient<FoldersView>();
+        builder.Services.AddTransient<RunningTasksView>();
         builder.Services.AddSingleton<StatusBar>(); // Status bar (singleton for global state binding)
 
         // App
         builder.Services.AddSingleton<App>();
+
+        builder.Services.BuildServiceProvider(new ServiceProviderOptions()
+        {
+            ValidateScopes = true,
+            ValidateOnBuild = true,
+        });
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "HAA0401:Possible allocation of reference type enumerator", Justification = "<Pending>", Scope = "member", Target = "~M:DamYou.Data.Pipeline.LibraryScanService.ScanAsync(System.IProgress{DamYou.Data.Pipeline.ScanProgress},System.Threading.CancellationToken)~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Performance", "HAA0502:Explicit new reference type allocation", Justification = "<Pending>", Scope = "member", Target = "~M:DamYou.Data.Repositories.FolderRepository.AddFoldersAsync(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)~System.Threading.Tasks.Task")]
