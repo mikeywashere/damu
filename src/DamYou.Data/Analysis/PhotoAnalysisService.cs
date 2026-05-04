@@ -30,13 +30,13 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
         var photo = await _db.Photos.FindAsync([photoId], ct);
         if (photo is null || !File.Exists(photo.FilePath)) return;
 
-        void Report(string pass) =>
-            progress?.Report(new AnalysisProgress(1, 0, photo.FileName, pass));
+        void Report(string pass, string step) =>
+            progress?.Report(new AnalysisProgress(1, 0, photo.FileName, pass, step));
 
         // Pass 1: CLIP embedding
         try
         {
-            Report("CLIP");
+            Report("CLIP", "Processing CLIP embedding");
             var existingEmbed = _db.PhotoEmbeddings
                 .FirstOrDefault(e => e.PhotoId == photoId && e.ModelName == _clip.ModelVariant);
             if (existingEmbed is not null) _db.PhotoEmbeddings.Remove(existingEmbed);
@@ -56,7 +56,7 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
         // Pass 2: YOLO object detection
         try
         {
-            Report("Object Detection");
+            Report("Object Detection", "Processing Object Detection");
             _db.PhotoDetectedObjects.RemoveRange(
                 _db.PhotoDetectedObjects.Where(d => d.PhotoId == photoId));
 
@@ -81,7 +81,7 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
         // Pass 3 + 4: OCR + DistilBERT
         try
         {
-            Report("OCR");
+            Report("OCR", "Processing OCR extraction");
             var existingOcr = _db.PhotoOcrTexts.FirstOrDefault(o => o.PhotoId == photoId);
             if (existingOcr is not null) _db.PhotoOcrTexts.Remove(existingOcr);
 
@@ -91,7 +91,7 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
             {
                 try
                 {
-                    Report("Text Embedding");
+                    Report("Text Embedding", "Processing Text Embedding");
                     var textVec = await _distilbert.GetTextEmbeddingAsync(ocrText, ct);
                     textEmbedding = EmbeddingToBytes(textVec);
                 }
@@ -110,7 +110,7 @@ public sealed class PhotoAnalysisService : IPhotoAnalysisService
         // Pass 5: Color palette
         try
         {
-            Report("Color Palette");
+            Report("Color Palette", "Processing Color Palette");
             var existingPalette = _db.PhotoColorPalettes.FirstOrDefault(p => p.PhotoId == photoId);
             if (existingPalette is not null) _db.PhotoColorPalettes.Remove(existingPalette);
 

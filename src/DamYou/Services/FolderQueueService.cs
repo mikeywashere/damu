@@ -1,8 +1,8 @@
 using DamYou.Data;
 using DamYou.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace DamYou.Services;
 
@@ -29,8 +29,10 @@ public sealed class FolderQueueService : IFolderQueueService
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
 
+        Expression<Func<QueuedFolder, bool>> predicate = f => f.FolderPath == folderPath;
+
         var existing = await db.QueuedFolders
-            .FirstOrDefaultAsync(f => f.FolderPath == folderPath, ct);
+            .FirstOrDefaultAsync(predicate, cancellationToken: ct);
 
         if (existing is not null)
         {

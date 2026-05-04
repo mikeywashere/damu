@@ -1,22 +1,30 @@
 using DamYou.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DamYou.Data.Repositories;
 
+#pragma warning disable HAA0301 // Closure allocations are expected in EF Core LINQ queries
 public sealed class PhotoRepository : IPhotoRepository
 {
     private readonly DamYouDbContext _db;
 
     public PhotoRepository(DamYouDbContext db) => _db = db;
 
-    public Task<bool> ExistsByPathAsync(string filePath, CancellationToken ct = default) =>
-        _db.Photos.AnyAsync(p => p.FilePath == filePath, ct);
+    public Task<bool> ExistsByPathAsync(string filePath, CancellationToken ct = default)
+    {
+        Expression<Func<Photo, bool>> predicate = p => p.FilePath == filePath;
+        return _db.Photos.AnyAsync(predicate, ct);
+    }
 
     public Task<int> CountAsync(CancellationToken ct = default) =>
         _db.Photos.CountAsync(ct);
 
-    public Task<int> CountByFolderAsync(int folderId, CancellationToken ct = default) =>
-        _db.Photos.Where(p => p.WatchedFolderId == folderId).CountAsync(ct);
+    public Task<int> CountByFolderAsync(int folderId, CancellationToken ct = default)
+    {
+        Expression<Func<Photo, bool>> predicate = p => p.WatchedFolderId == folderId;
+        return _db.Photos.Where(predicate).CountAsync(ct);
+    }
 
     public async Task AddPhotosAsync(IEnumerable<Photo> photos, CancellationToken ct = default)
     {
@@ -27,14 +35,17 @@ public sealed class PhotoRepository : IPhotoRepository
     /// <summary>
     /// Fetches a page of photos ordered by date indexed (newest first).
     /// </summary>
-    public Task<List<Photo>> GetPageAsync(int skip, int take, CancellationToken ct = default) =>
-        _db.Photos
-            .Where(p => !p.IsDeleted)
+    public Task<List<Photo>> GetPageAsync(int skip, int take, CancellationToken ct = default)
+    {
+        Expression<Func<Photo, bool>> predicate = p => !p.IsDeleted;
+        return _db.Photos
+            .Where(predicate)
             .OrderByDescending(p => p.DateIndexed)
             .Skip(skip)
             .Take(take)
             .AsNoTracking()
             .ToListAsync(ct);
+    }
 
     /// <summary>
     /// Searches photos by filename or folder path and returns a page of results.
@@ -77,3 +88,4 @@ public sealed class PhotoRepository : IPhotoRepository
         return allPaths;
     }
 }
+#pragma warning restore HAA0301

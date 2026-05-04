@@ -355,7 +355,8 @@ public sealed class QueueProcessorServiceTests
             settings,
             _state.Object,
             _scopeFactory.Object,
-            _log.Object);
+            _log.Object,
+            new Mock<IVerboseLoggingService>().Object);
 
     [Fact]
     public async Task StartAsync_WaitsForStartupDelay_BeforeFirstDequeue()
@@ -605,7 +606,8 @@ public sealed class FolderScanningTests : IDisposable
             settings.Object,
             _stateMock.Object,
             _scopeFactory.Object,
-            new Mock<ILogger<QueueProcessorService>>().Object);
+            new Mock<ILogger<QueueProcessorService>>().Object,
+            new Mock<IVerboseLoggingService>().Object);
     }
 
     [Fact]
@@ -802,8 +804,9 @@ public sealed class QueueSettingsTests
     {
         var settingsMock = new Mock<IQueueSettings>();
         settingsMock.Setup(s => s.GetQueueWaitTimeMs()).Returns(7_000);
+        var folderPickerMock = new Mock<IFolderPickerService>();
 
-        var vm = new SettingsViewModel(settingsMock.Object);
+        var vm = new SettingsViewModel(settingsMock.Object, folderPickerMock.Object);
 
         Assert.Equal("7", vm.QueueWaitTimeSeconds);
     }
@@ -813,8 +816,9 @@ public sealed class QueueSettingsTests
     {
         var settingsMock = new Mock<IQueueSettings>();
         settingsMock.Setup(s => s.GetQueueWaitTimeMs()).Returns(5_000);
+        var folderPickerMock = new Mock<IFolderPickerService>();
 
-        var vm = new SettingsViewModel(settingsMock.Object, dispatcher: _ => { }); // no-op: skip UI alert
+        var vm = new SettingsViewModel(settingsMock.Object, folderPickerMock.Object, dispatcher: _ => { }); // no-op: skip UI alert
         vm.QueueWaitTimeSeconds = "10";
         vm.SaveSettingsCommand.Execute(null);
 
@@ -826,8 +830,9 @@ public sealed class QueueSettingsTests
     {
         var settingsMock = new Mock<IQueueSettings>();
         settingsMock.Setup(s => s.GetQueueWaitTimeMs()).Returns(5_000);
+        var folderPickerMock = new Mock<IFolderPickerService>();
 
-        var vm = new SettingsViewModel(settingsMock.Object, dispatcher: _ => { });
+        var vm = new SettingsViewModel(settingsMock.Object, folderPickerMock.Object, dispatcher: _ => { });
         vm.QueueWaitTimeSeconds = "0"; // below minimum
         vm.SaveSettingsCommand.Execute(null);
 
@@ -839,8 +844,9 @@ public sealed class QueueSettingsTests
     {
         var settingsMock = new Mock<IQueueSettings>();
         settingsMock.Setup(s => s.GetQueueWaitTimeMs()).Returns(5_000);
+        var folderPickerMock = new Mock<IFolderPickerService>();
 
-        var vm = new SettingsViewModel(settingsMock.Object);
+        var vm = new SettingsViewModel(settingsMock.Object, folderPickerMock.Object);
         vm.QueueWaitTimeSeconds = "abc";
         vm.SaveSettingsCommand.Execute(null);
 

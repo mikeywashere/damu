@@ -32,6 +32,9 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     [ObservableProperty]
     private string statusText = "Ready";
 
+    [ObservableProperty]
+    private string currentStep = string.Empty;
+
     // Queue state properties (updated by QueueProcessorService via IProcessingStateService)
     [ObservableProperty]
     private int folderQueueCount = 0;
@@ -116,10 +119,19 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
             CurrentProgress = progress.Completed;
             TotalItems = progress.Total;
             
-            // Update status text based on current file or pass
-            StatusText = progress.CurrentFile != null
-                ? $"Processing: {Path.GetFileName(progress.CurrentFile)}"
-                : $"Processing {progress.CurrentPass}...";
+            if (progress.CurrentStep != null)
+            {
+                StatusText = $"Processing: {Path.GetFileName(progress.CurrentFile)} | Step: {progress.CurrentStep}";
+                CurrentStep = progress.CurrentStep;
+            }
+            else if (progress.CurrentFile != null)
+            {
+                StatusText = $"Processing: {Path.GetFileName(progress.CurrentFile)}";
+            }
+            else if (progress.CurrentPass != null)
+            {
+                StatusText = $"Processing {progress.CurrentPass}...";
+            }
         });
     }
 

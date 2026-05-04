@@ -78,12 +78,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         _photoRepository = photoRepository;
         _importProgressService = importProgressService;
         _services = services;
-        
+
         // Subscribe to import progress to load new photos as they arrive
         _importProgressService.ImportProgressReported += OnImportProgressReported;
         _importProgressService.ImportCompleted += OnImportCompleted;
     }
-    
+
     private async void OnImportProgressReported(int totalDiscovered, int processed, string? currentFile)
     {
         // Refresh photo grid periodically during import (every 50 photos to avoid excessive updates)
@@ -95,7 +95,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             });
         }
     }
-    
+
     private async void OnImportCompleted()
     {
         // Do a final refresh when import completes
@@ -104,31 +104,31 @@ public sealed partial class LibraryViewModel : ObservableObject
             await RefreshPhotosFromImportAsync();
         });
     }
-    
+
     private async Task RefreshPhotosFromImportAsync()
     {
         if (_isLoadingFromImport)
             return;
-        
+
         _isLoadingFromImport = true;
         try
         {
             // Get updated photo count
             var newTotalCount = await _photoRepository.CountAsync();
-            
+
             // If count increased, reload the grid
             if (newTotalCount > _totalPhotoCount)
             {
                 _totalPhotoCount = newTotalCount;
                 _currentSkip = 0;
                 GridPhotos.Clear();
-                
+
                 var photos = await _photoRepository.GetPageAsync(0, PageSize);
                 foreach (var photo in photos)
                 {
                     GridPhotos.Add(new PhotoGridItem(photo));
                 }
-                
+
                 _currentSkip = photos.Count;
                 PhotoCount = GridPhotos.Count;
             }
@@ -161,7 +161,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             _currentSkip = 0;
             GridPhotos.Clear();
-            
+
             List<DamYou.Data.Entities.Photo> photos;
             if (string.IsNullOrWhiteSpace(_currentSearchText))
             {
@@ -273,7 +273,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 ScanCurrentFolder = p.CurrentFolder;
             });
 
-            await _scanService.ScanAsync(progress, ct);
+            //await _scanService.ScanAsync(progress, ct);
             await RefreshQueueDepthAsync();
             await LoadPhotosAsync(ct);
         }

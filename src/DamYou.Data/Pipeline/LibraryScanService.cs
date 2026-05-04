@@ -1,7 +1,6 @@
 using DamYou.Data.Analysis;
 using DamYou.Data.Entities;
 using DamYou.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace DamYou.Data.Pipeline;
@@ -32,31 +31,19 @@ public sealed class LibraryScanService : ILibraryScanService
         _pipelineProcessor = pipelineProcessor;
     }
 
-    public async Task ScanAsync(IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
+    public async Task ScanAsync(string folderPath, IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
     {
-        var scanTask = new PipelineTask
+        QueuedFolder folder = new()
         {
-            TaskName = "Scan Folder",
-            Status = PipelineTaskStatus.Running,
-            StartedAt = DateTime.UtcNow,
-            TotalItems = 0,
-            CurrentItemIndex = 0,
-            CurrentItemName = null
+            AddedAt = DateTime.UtcNow,
+            FolderPath = folderPath,
+            Id = Guid.NewGuid().ToString("n"),
+            Priority = 0,
+            Status = QueueStatus.Pending
         };
-        _db.PipelineTasks.Add(scanTask);
+
+        _db.QueuedFolders.Add(folder);
         await _db.SaveChangesAsync(ct);
-    }
-
-    public async Task EnqueuePhotosForAnalysisAsync(CancellationToken ct = default)
-    {
-        var unprocessedPhotos = await _db.Photos
-            .Where(p => p.Status == ProcessingStatus.Unprocessed)
-            .CountAsync(ct);
-
-        if (unprocessedPhotos == 0)
-            return;
-
-        await _pipelineProcessor.ProcessQueueAsync(ct: ct);
     }
 
     private static async Task<string> ComputeSha256Async(string filePath, CancellationToken ct)

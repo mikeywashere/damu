@@ -44,4 +44,9 @@
 - **CanComplete must notify via CollectionChanged.** Because `SelectedFolders` is an ObservableCollection<string>, `CanComplete` doesn't auto-notify unless we explicitly call `OnPropertyChanged(nameof(CanComplete))` in the CollectionChanged handler.
 - **NavigationPage wraps the first view.** `App.CreateWindow` returns `new Window(new NavigationPage(...))` so the shell can `PushAsync` on setup completion without a separate Shell route.
 
+### 2026-05-04 — Folder Deletion and Scan Features
 
+- **Trash icon for delete.** Replaced the ✕ remove button with a 🗑️ emoji button (TextColor="#E64A19" for destructive red/orange). Keep WidthRequest/HeightRequest="36" with Transparent background to match the icon-button pattern used across the app.
+- **Scan Now button pattern.** Added a 🔄 button (TextColor="#1976D2") in a new Grid column that calls ScanFolderCommand. The command injects IFolderQueueService and calls EnqueueAsync(path), wrapped in IsBusy to prevent double-taps.
+- **CollectionView column expansion.** When adding a new action column to a DataTemplate Grid, update ColumnDefinitions at the DataTemplate Grid level (not the outer page Grid). Changed "Auto,*,Auto" to "Auto,*,Auto,Auto" and assigned Grid.Column="3" to the remove button.
+- **IFolderQueueService DI.** Already registered as Singleton in MauiProgram.cs — just adding it to FoldersViewModel constructor is sufficient; no DI registration changes needed.

@@ -46,6 +46,7 @@ public sealed class QueueProcessorService : IHostedService
     private readonly IProcessingStateService _processingState;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<QueueProcessorService> _logger;
+    private readonly IVerboseLoggingService _loggingService;
     private int current = 0;
 
     private CancellationTokenSource? _cts;
@@ -57,7 +58,8 @@ public sealed class QueueProcessorService : IHostedService
         IQueueSettings queueSettings,
         IProcessingStateService processingState,
         IServiceScopeFactory scopeFactory,
-        ILogger<QueueProcessorService> logger)
+        ILogger<QueueProcessorService> logger,
+        IVerboseLoggingService loggingService)
     {
         _folderQueue = folderQueue;
         _fileQueue = fileQueue;
@@ -65,6 +67,7 @@ public sealed class QueueProcessorService : IHostedService
         _processingState = processingState;
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _loggingService = loggingService;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -125,13 +128,13 @@ public sealed class QueueProcessorService : IHostedService
                     if (fp is not null)
                     {
                         await ProcessFolderAsync(fp, ct);
-                        return;
+                        continue;
                     }
                 }
                 if (current == 1)
                 {
                     await ProcessFileAsync(ct);
-                    return;
+                    continue;
                 }
                 // else both empty — idle
 
@@ -262,6 +265,12 @@ public sealed class QueueProcessorService : IHostedService
 
             // Run the pipeline (processes all queued PipelineTasks, including the one just added)
             await pipelineProcessor.ProcessQueueAsync(ct: ct);
+
+            // Log completion of analysis pipeline with final step
+            var fileName = Path.GetFileName(filePath);
+            var completionTime = DateTime.UtcNow;
+            var finalStep = "Processing Color Palette";
+            await _loggingService.LogStepAsync(finalStep, fileName, completionTime, ct);
 
             await _fileQueue.MarkCompleteAsync(filePath, CancellationToken.None);
             _logger.LogDebug("File processing complete: {FilePath}", filePath);

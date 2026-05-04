@@ -84,7 +84,7 @@ public sealed partial class GalleryViewModel : ObservableObject
         _photoRepository = photoRepository;
         _importProgressService = importProgressService;
         _services = services;
-        
+
         // Subscribe to import progress to load new photos as they arrive
         _importProgressService.ImportProgressReported += OnImportProgressReported;
         _importProgressService.ImportCompleted += OnImportCompleted;
@@ -103,7 +103,7 @@ public sealed partial class GalleryViewModel : ObservableObject
         _gridHeight = gridHeight;
 
         int newPageSize = CalculatePageSize(gridWidth, gridHeight, CurrentGridCellSize);
-        
+
         // If page size changed significantly, recalculate what we need to load
         if (newPageSize != _calculatedPageSize && newPageSize > 0)
         {
@@ -133,7 +133,7 @@ public sealed partial class GalleryViewModel : ObservableObject
 
         int columnsPerRow = Math.Max(1, (int)(availableWidth / (cellSize + cellMargin)));
         int rowsInViewport = Math.Max(1, (int)(availableHeight / (cellSize + cellMargin)));
-        
+
         // Load one extra row as a lazy buffer
         int calculated = (columnsPerRow * (rowsInViewport + 1));
         return Math.Max(DefaultPageSize, calculated);
@@ -151,7 +151,7 @@ public sealed partial class GalleryViewModel : ObservableObject
             await LoadMorePhotosAsync(CancellationToken.None);
         }
     }
-    
+
     private async void OnImportProgressReported(int totalDiscovered, int processed, string? currentFile)
     {
         // Refresh photo grid periodically during import (every 50 photos to avoid excessive updates)
@@ -163,7 +163,7 @@ public sealed partial class GalleryViewModel : ObservableObject
             });
         }
     }
-    
+
     private async void OnImportCompleted()
     {
         // Do a final refresh when import completes
@@ -172,18 +172,18 @@ public sealed partial class GalleryViewModel : ObservableObject
             await RefreshPhotosFromImportAsync();
         });
     }
-    
+
     private async Task RefreshPhotosFromImportAsync()
     {
         if (_isLoadingFromImport)
             return;
-        
+
         _isLoadingFromImport = true;
         try
         {
             // Get updated photo count
             var newTotalCount = await _photoRepository.CountAsync();
-            
+
             // If count increased, reload the grid
             if (newTotalCount > _totalPhotoCount)
             {
@@ -191,20 +191,20 @@ public sealed partial class GalleryViewModel : ObservableObject
                 CurrentPage = 0;
                 _currentSkip = 0;
                 GridPhotos.Clear();
-                
+
                 var pageSize = _calculatedPageSize > 0 ? _calculatedPageSize : DefaultPageSize;
                 var photos = await _photoRepository.GetPageAsync(0, pageSize);
                 foreach (var photo in photos)
                 {
                     GridPhotos.Add(new PhotoGridItem(photo));
                 }
-                
+
                 _currentSkip = photos.Count;
                 PhotoCount = GridPhotos.Count;
-                
+
                 // Load file paths for all loaded photos
                 await LoadFilePathsForPhotosAsync(GridPhotos, CancellationToken.None);
-                
+
                 RecalculateTotalPages();
             }
         }
@@ -240,9 +240,9 @@ public sealed partial class GalleryViewModel : ObservableObject
             CurrentPage = 0;
             _currentSkip = 0;
             GridPhotos.Clear();
-            
+
             int pageSize = _calculatedPageSize > 0 ? _calculatedPageSize : DefaultPageSize;
-            
+
             List<DamYou.Data.Entities.Photo> photos;
             if (string.IsNullOrWhiteSpace(_currentSearchText))
             {
@@ -261,10 +261,10 @@ public sealed partial class GalleryViewModel : ObservableObject
 
             _currentSkip = photos.Count;
             PhotoCount = GridPhotos.Count;
-            
+
             // Load file paths for all loaded photos
             await LoadFilePathsForPhotosAsync(GridPhotos, ct);
-            
+
             RecalculateTotalPages();
         }
         finally
@@ -283,7 +283,7 @@ public sealed partial class GalleryViewModel : ObservableObject
         try
         {
             int pageSize = _calculatedPageSize > 0 ? _calculatedPageSize : DefaultPageSize;
-            
+
             List<DamYou.Data.Entities.Photo> photos;
             if (string.IsNullOrWhiteSpace(_currentSearchText))
             {
@@ -301,11 +301,11 @@ public sealed partial class GalleryViewModel : ObservableObject
 
             _currentSkip += photos.Count;
             PhotoCount = GridPhotos.Count;
-            
+
             // Load file paths for all newly loaded photos
             var newItems = GridPhotos.Skip(GridPhotos.Count - photos.Count).ToList();
             await LoadFilePathsForPhotosAsync(newItems, ct);
-            
+
             CurrentPage = (int)Math.Ceiling((double)_currentSkip / pageSize);
             RecalculateTotalPages();
         }
@@ -325,7 +325,7 @@ public sealed partial class GalleryViewModel : ObservableObject
         _currentSearchText = string.Empty;
         SearchText = string.Empty;
         GridPhotos.Clear();
-        
+
         // Reload first page while maintaining viewport size
         await LoadPhotosAsync(ct);
     }
@@ -345,7 +345,7 @@ public sealed partial class GalleryViewModel : ObservableObject
 
         var newSize = CurrentGridCellSize + (delta > 0 ? step : -step);
         CurrentGridCellSize = Math.Clamp(newSize, minSize, maxSize);
-        
+
         // When cell size changes, recalculate page size if grid dimensions are known
         if (_gridWidth > 0 && _gridHeight > 0)
         {
@@ -376,7 +376,7 @@ public sealed partial class GalleryViewModel : ObservableObject
                 ScanCurrentFolder = p.CurrentFolder;
             });
 
-            await _scanService.ScanAsync(progress, ct);
+            await _scanService.ScanAsync("no", progress, ct);
             await LoadPhotosAsync(ct);
         }
         catch (OperationCanceledException)

@@ -13,7 +13,9 @@ public class PhotoFolderViewModel : ObservableObject
     private readonly WatchedFolder _folder;
 
     public int Id => _folder.Id;
+
     public string Path => _folder.Path;
+
     public int PhotoCount { get; set; }
 
     public PhotoFolderViewModel(WatchedFolder folder, int photoCount)
@@ -57,7 +59,7 @@ public sealed partial class ManageFoldersViewModel : ObservableObject
         {
             Folders.Clear();
             var folderList = await _folderRepository.GetActiveFoldersAsync(ct);
-            
+
             foreach (var folder in folderList)
             {
                 var count = await _photoRepository.CountByFolderAsync(folder.Id, ct);
@@ -136,14 +138,14 @@ public sealed partial class ManageFoldersViewModel : ObservableObject
                 {
                     // Could show progress here if needed
                 });
-                await scanService.ScanAsync(progress, ct);
+                await scanService.ScanAsync("no", progress, ct);
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error scanning library: {ex}");
         }
-        
+
         // Navigate back
         if (Application.Current?.Windows.Count > 0 && Application.Current.Windows[0].Page is NavigationPage nav)
         {
