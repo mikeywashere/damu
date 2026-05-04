@@ -96,9 +96,7 @@ public static class MauiProgram
 
         // ViewModels
         builder.Services.AddTransient<LibrarySetupViewModel>();
-        builder.Services.AddTransient<LibraryViewModel>();
         builder.Services.AddTransient<ManageFoldersViewModel>();
-        builder.Services.AddTransient<TasksViewModel>();
         builder.Services.AddTransient<GalleryViewModel>();
         builder.Services.AddTransient<FoldersViewModel>();
         builder.Services.AddTransient<WorkQueueViewModel>();
@@ -125,9 +123,7 @@ public static class MauiProgram
         // Views
         builder.Services.AddTransient<SplashScreenView>();
         builder.Services.AddTransient<LibrarySetupModal>();
-        builder.Services.AddTransient<LibraryView>();
         builder.Services.AddTransient<ManageFoldersModal>();
-        builder.Services.AddTransient<TasksView>();
         builder.Services.AddTransient<GalleryView>();
         builder.Services.AddTransient<FoldersView>();
         builder.Services.AddTransient<WorkQueueView>();
