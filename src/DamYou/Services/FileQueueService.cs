@@ -125,6 +125,17 @@ public sealed class FileQueueService : IFileQueueService
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task<IReadOnlyList<QueuedFile>> GetActiveItemsAsync(CancellationToken ct = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
+
+        return await db.QueuedFiles
+            .Where(f => f.Status == QueueStatus.Pending || f.Status == QueueStatus.Processing)
+            .OrderBy(f => f.AddedAt)
+            .ToListAsync(ct);
+    }
+
     public async Task ClearAsync(CancellationToken ct = default)
     {
         using var scope = _scopeFactory.CreateScope();

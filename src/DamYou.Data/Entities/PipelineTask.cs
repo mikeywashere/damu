@@ -13,9 +13,10 @@ public sealed class PipelineTask
     public int? PhotoId { get; set; }
     public Photo? Photo { get; set; }
     public string? ErrorMessage { get; set; }
-    
+
     // Progress tracking
     public string? CurrentItemName { get; set; }
+
     public int CurrentItemIndex { get; set; }
     public int TotalItems { get; set; }
 }

@@ -24,7 +24,7 @@ public partial class AppShell : Shell
 		{
 			var galleryRoute = "gallery";
 			var foldersRoute = "folders";
-			var tasksRoute = "running-tasks";
+			var tasksRoute = "work-queue";
 			var settingsRoute = "settings";
 
 			foreach (var item in this.Items)
@@ -53,9 +53,9 @@ public partial class AppShell : Shell
 									}
 									else if (shellContent.Route == tasksRoute)
 									{
-										var tasksView = services.GetRequiredService<RunningTasksView>();
-										shellContent.Content = tasksView;
-										Log.Debug("AppShell InitializeTabContent: Assigned RunningTasksView to tasks tab");
+										var workQueueView = services.GetRequiredService<WorkQueueView>();
+										shellContent.Content = workQueueView;
+										Log.Debug("AppShell InitializeTabContent: Assigned WorkQueueView to work queue tab");
 									}
 									else if (shellContent.Route == settingsRoute)
 									{

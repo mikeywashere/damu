@@ -100,7 +100,7 @@ public static class MauiProgram
         builder.Services.AddTransient<TasksViewModel>();
         builder.Services.AddTransient<GalleryViewModel>();
         builder.Services.AddTransient<FoldersViewModel>();
-        builder.Services.AddTransient<RunningTasksViewModel>();
+        builder.Services.AddTransient<WorkQueueViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<IProcessingStateService, ProcessingStateService>(); // Event broadcaster for processing state
         builder.Services.AddSingleton<IImportProgressService, ImportProgressService>(); // Event broadcaster for import progress
@@ -129,7 +129,7 @@ public static class MauiProgram
         builder.Services.AddTransient<TasksView>();
         builder.Services.AddTransient<GalleryView>();
         builder.Services.AddTransient<FoldersView>();
-        builder.Services.AddTransient<RunningTasksView>();
+        builder.Services.AddTransient<WorkQueueView>();
         builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<StatusBar>(); // Status bar (singleton for global state binding)
         builder.Services.AddSingleton<AppShell>();
@@ -168,7 +168,7 @@ public static class MauiProgram
         logger.Debug("Registering shell routes...");
         Routing.RegisterRoute("gallery", typeof(GalleryView));
         Routing.RegisterRoute("folders", typeof(FoldersView));
-        Routing.RegisterRoute("running-tasks", typeof(RunningTasksView));
+        Routing.RegisterRoute("work-queue", typeof(WorkQueueView));
         Routing.RegisterRoute("settings", typeof(SettingsPage));
         logger.Information("=== MauiProgram initialization completed ===");
 

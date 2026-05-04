@@ -1,6 +1,6 @@
+using DamYou.Data.Analysis;
 using DamYou.Data.Entities;
 using DamYou.Data.Repositories;
-using DamYou.Data.Analysis;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -36,7 +36,7 @@ public sealed class LibraryScanService : ILibraryScanService
     {
         var scanTask = new PipelineTask
         {
-            TaskName = "Scan Library",
+            TaskName = "Scan Folder",
             Status = PipelineTaskStatus.Running,
             StartedAt = DateTime.UtcNow,
             TotalItems = 0,
@@ -45,119 +45,6 @@ public sealed class LibraryScanService : ILibraryScanService
         };
         _db.PipelineTasks.Add(scanTask);
         await _db.SaveChangesAsync(ct);
-
-        try
-        {
-            var folders = await _folderRepository.GetActiveFoldersAsync(ct);
-
-            var totalDiscovered = 0;
-            var enqueued = 0;
-
-            foreach (var folder in folders)
-            {
-                ct.ThrowIfCancellationRequested();
-
-                if (!Directory.Exists(folder.Path)) continue;
-
-                foreach (var filePath in Directory.EnumerateFiles(folder.Path, "*", SearchOption.AllDirectories))
-                {
-                    if (!SupportedExtensions.Contains(Path.GetExtension(filePath)))
-                        continue;
-
-                    ct.ThrowIfCancellationRequested();
-                    totalDiscovered++;
-                    
-                    // Update progress tracking
-                    scanTask.TotalItems = totalDiscovered;
-                    scanTask.CurrentItemIndex = totalDiscovered;
-                    scanTask.CurrentItemName = Path.GetFileName(filePath);
-                    _db.PipelineTasks.Update(scanTask);
-                    await _db.SaveChangesAsync(ct);
-                    
-                    progress?.Report(new ScanProgress(totalDiscovered, enqueued, folder.Path));
-
-                    var existing = await _db.Photos
-                        .FirstOrDefaultAsync(p => p.FilePath == filePath, ct);
-
-                    if (existing is null)
-                    {
-                        try
-                        {
-                            var hash = await ComputeSha256Async(filePath, ct);
-                            var existingByHash = await _db.Photos
-                                .FirstOrDefaultAsync(p => p.FileHash == hash, ct);
-
-                            if (existingByHash is not null)
-                            {
-                                // Hash matches - verify byte-by-byte
-                                if (await BytesMatchAsync(filePath, existingByHash.FilePath, ct))
-                                {
-                                    // True duplicate - add to PhotoDuplicate table
-                                    var duplicate = new PhotoDuplicate
-                                    {
-                                        PhotoId = existingByHash.Id,
-                                        FilePath = filePath,
-                                        FileName = Path.GetFileName(filePath),
-                                        DateDiscovered = DateTime.UtcNow
-                                    };
-                                    _db.PhotoDuplicates.Add(duplicate);
-                                    await _db.SaveChangesAsync(ct);
-                                    continue;
-                                }
-                            }
-
-                            // Not a duplicate - create new Photo
-                            var info = new FileInfo(filePath);
-                            var photo = new Photo
-                            {
-                                WatchedFolderId = folder.Id,
-                                FileName = Path.GetFileName(filePath),
-                                FilePath = filePath,
-                                FileSizeBytes = info.Length,
-                                FileHash = hash,
-                                DateIndexed = DateTime.UtcNow,
-                                Status = ProcessingStatus.Unprocessed
-                            };
-                            _db.Photos.Add(photo);
-                            await _db.SaveChangesAsync(ct);
-
-                            await _taskRepository.EnqueueAsync("Process Photo", photo.Id, ct);
-                            enqueued++;
-                        }
-                        catch (IOException) { /* skip unreadable files */ }
-                        catch (UnauthorizedAccessException) { /* skip inaccessible files */ }
-                    }
-                    else if (existing.Status == ProcessingStatus.Unprocessed)
-                    {
-                        var alreadyQueued = await _db.PipelineTasks.AnyAsync(
-                            t => t.PhotoId == existing.Id && t.Status == PipelineTaskStatus.Queued, ct);
-
-                        if (!alreadyQueued)
-                        {
-                            await _taskRepository.EnqueueAsync("Process Photo", existing.Id, ct);
-                            enqueued++;
-                        }
-                    }
-
-                    progress?.Report(new ScanProgress(totalDiscovered, enqueued, folder.Path));
-                }
-            }
-
-            // After scan completes, trigger pipeline processing for unprocessed photos
-            await EnqueuePhotosForAnalysisAsync(ct);
-
-            scanTask.Status = PipelineTaskStatus.Completed;
-            scanTask.CompletedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync(ct);
-        }
-        catch (Exception ex)
-        {
-            scanTask.Status = PipelineTaskStatus.Failed;
-            scanTask.ErrorMessage = ex.Message;
-            scanTask.CompletedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync(CancellationToken.None);
-            throw;
-        }
     }
 
     public async Task EnqueuePhotosForAnalysisAsync(CancellationToken ct = default)

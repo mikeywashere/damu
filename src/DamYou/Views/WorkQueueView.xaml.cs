@@ -2,11 +2,11 @@ using DamYou.ViewModels;
 
 namespace DamYou.Views;
 
-public partial class RunningTasksView : ContentPage
+public partial class WorkQueueView : ContentPage
 {
-    private readonly RunningTasksViewModel _viewModel;
+    private readonly WorkQueueViewModel _viewModel;
 
-    public RunningTasksView(RunningTasksViewModel viewModel)
+    public WorkQueueView(WorkQueueViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;

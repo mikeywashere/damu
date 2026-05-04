@@ -8,7 +8,7 @@
     <TabBar>
         <ShellContent Title="🖼️ Gallery" Route="gallery" />
         <ShellContent Title="📁 Folders" Route="folders" />
-        <ShellContent Title="⏳ Tasks" Route="running-tasks" />
+        <ShellContent Title="📋 Work Queue" Route="work-queue" />
         <ShellContent Title="⚙️ Settings" Route="settings" />
     </TabBar>
 

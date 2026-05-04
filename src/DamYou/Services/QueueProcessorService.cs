@@ -3,7 +3,6 @@ using DamYou.Data.Analysis;
 using DamYou.Data.Entities;
 using DamYou.Data.Pipeline;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -47,6 +46,7 @@ public sealed class QueueProcessorService : IHostedService
     private readonly IProcessingStateService _processingState;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<QueueProcessorService> _logger;
+    private int current = 0;
 
     private CancellationTokenSource? _cts;
     private Task? _loopTask;
@@ -113,27 +113,28 @@ public sealed class QueueProcessorService : IHostedService
                 var folderCount = await _folderQueue.GetCountAsync(ct);
                 var fileCount = await _fileQueue.GetCountAsync(ct);
 
+                int waitMs = _queueSettings.GetQueueWaitTimeMs();
+                await Task.Delay(waitMs, ct);
+
                 string activeQueue = DetermineActiveQueue(folderCount, fileCount);
                 _processingState.NotifyQueueCountsChanged(folderCount, fileCount, null, activeQueue);
 
-                if (folderCount > 0 && fileCount == 0)
+                if (current == 0)
                 {
                     var fp = await _folderQueue.DequeueAsync(ct);
-                    if (fp is not null) await ProcessFolderAsync(fp, ct);
+                    if (fp is not null)
+                    {
+                        await ProcessFolderAsync(fp, ct);
+                        return;
+                    }
                 }
-                else if (fileCount > 0 && folderCount == 0)
+                if (current == 1)
                 {
                     await ProcessFileAsync(ct);
-                }
-                else if (folderCount > 0 && fileCount > 0)
-                {
-                    // Alternate: one folder tick then one file tick so neither queue starves
-                    var fp = await _folderQueue.DequeueAsync(ct);
-                    if (fp is not null) await ProcessFolderAsync(fp, ct);
-                    if (!ct.IsCancellationRequested)
-                        await ProcessFileAsync(ct);
+                    return;
                 }
                 // else both empty — idle
+
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -143,9 +144,11 @@ public sealed class QueueProcessorService : IHostedService
             {
                 _logger.LogError(ex, "Unexpected error in QueueProcessorService loop");
             }
+            finally
+            {
+                current = (current + 1) % 2; // alternate between 0 and 1 for folder/file priority;
+            }
 
-            int waitMs = _queueSettings.GetQueueWaitTimeMs();
-            await Task.Delay(waitMs, ct);
         }
     }
 

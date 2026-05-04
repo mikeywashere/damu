@@ -1,3 +1,5 @@
+using DamYou.Data.Entities;
+
 namespace DamYou.Services;
 
 /// <summary>
@@ -8,4 +10,5 @@ public interface IFileQueueService : IQueueService<string>
 {
     Task MarkCompleteAsync(string filePath, CancellationToken ct = default);
     Task MarkFailedAsync(string filePath, CancellationToken ct = default);
+    Task<IReadOnlyList<QueuedFile>> GetActiveItemsAsync(CancellationToken ct = default);
 }

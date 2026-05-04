@@ -127,6 +127,18 @@ public sealed class FolderQueueService : IFolderQueueService
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task<IReadOnlyList<QueuedFolder>> GetActiveItemsAsync(CancellationToken ct = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
+
+        return await db.QueuedFolders
+            .Where(f => f.Status == QueueStatus.Pending || f.Status == QueueStatus.Processing)
+            .OrderByDescending(f => f.Priority)
+            .ThenBy(f => f.AddedAt)
+            .ToListAsync(ct);
+    }
+
     public async Task ClearAsync(CancellationToken ct = default)
     {
         using var scope = _scopeFactory.CreateScope();

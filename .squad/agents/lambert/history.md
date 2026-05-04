@@ -29,7 +29,14 @@
 - **ProcessingHostedService does not auto-start.** No timer is initialized in StartAsync()—processing is triggered manually via TriggerProcessingAsync(). This naturally satisfies the constraint: no background work happens during the splash screen (or at all until manually triggered).
 - **MAUI image resource naming.** Resource file names must be lowercase, start and end with a letter character, and contain only alphanumeric characters or underscores. DAMu.png → damu.png in Resources/Images/.
 
-### 2026-04-27 — First-Run UI Sprint
+### 2026-05-03 — Work Queue View Refactor (RunningTasks → WorkQueue)
+
+- **Queue service interface extension pattern.** When a ViewModel needs to display full entity lists from a queue service (not just counts), add `GetActiveItemsAsync()` to the service interface returning `IReadOnlyList<TEntity>`. This keeps the ViewModel decoupled from the DbContext while preserving the service abstraction. Both `IFolderQueueService` and `IFileQueueService` now expose this method.
+- **BindableLayout vs CollectionView in ScrollView.** Use `BindableLayout.ItemsSource` on a `VerticalStackLayout` instead of `CollectionView` when items need to live inside a `ScrollView`. This avoids the nested-scroll layout conflict in MAUI and renders correctly for moderate list sizes (queue displays).
+- **DataTemplate x:DataType with cross-project entities.** When a XAML DataTemplate references an entity from a different assembly (e.g. `DamYou.Data.Entities`), the xmlns must include the `assembly=` qualifier: `xmlns:entities="clr-namespace:DamYou.Data.Entities;assembly=DamYou.Data"`. Without it, the compiled binding `x:DataType` won't resolve at build time.
+- **Tab route rename flow.** To rename a Shell tab route, update four files: AppShell.xaml (Route attribute), AppShell.xaml.cs (route string constant + GetRequiredService type), MauiProgram.cs (AddTransient + Routing.RegisterRoute), and remove the old files. The old view/viewmodel files must be deleted to prevent duplicate type registrations.
+
+
 
 - **Converters belong in App.xaml MergedDictionaries.** IntToBoolConverter and InvertBoolConverter must be registered in App.xaml (not just Styles.xaml) so they resolve from the StaticResource extension inside ContentPage XAML.
 - **FolderPickerService is Windows-only.** It uses `MauiWinUIWindow` and `InitializeWithWindow` from WinRT interop. Do not reference it from shared/cross-platform code paths.
