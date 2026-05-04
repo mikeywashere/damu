@@ -15,6 +15,7 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
 {
     private readonly IProcessingWorker _processingWorker;
     private readonly IProcessingStateService _processingStateService;
+    private readonly Action<Action> _dispatcher;
     private bool _isProcessingNow = false;
 
     [ObservableProperty]
@@ -31,21 +32,52 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     [ObservableProperty]
     private string statusText = "Ready";
 
+    // Queue state properties (updated by QueueProcessorService via IProcessingStateService)
+    [ObservableProperty]
+    private int folderQueueCount = 0;
+
+    [ObservableProperty]
+    private int fileQueueCount = 0;
+
+    /// <summary>
+    /// Truncated display of the item currently being processed (center ellipsis, max ~40 chars).
+    /// </summary>
+    [ObservableProperty]
+    private string currentItemShort = string.Empty;
+
+    /// <summary>
+    /// Full path of the item currently being processed (for tooltip binding).
+    /// </summary>
+    [ObservableProperty]
+    private string currentItemFull = string.Empty;
+
+    /// <summary>
+    /// Which queue is active: "Folders", "Files", "Both", or "Idle".
+    /// </summary>
+    [ObservableProperty]
+    private string activeQueue = "Idle";
+
     /// <summary>
     /// Computed property: Display text like "Processing: 5/42 items"
     /// </summary>
     public string ProgressText =>
         TotalItems == 0 ? "Idle" : $"{CurrentProgress}/{TotalItems}";
 
-    public ProcessingStateViewModel(IProcessingWorker processingWorker, IProcessingStateService processingStateService)
+    public ProcessingStateViewModel(IProcessingWorker processingWorker, IProcessingStateService processingStateService, Action<Action>? dispatcher = null)
     {
         _processingWorker = processingWorker;
         _processingStateService = processingStateService;
+        _dispatcher = dispatcher ?? (action =>
+        {
+            try { MainThread.BeginInvokeOnMainThread(action); }
+            catch { action(); } // test / non-MAUI context: invoke directly
+        });
 
         // Subscribe to processing state events
         _processingStateService.ProcessingStarted += OnProcessingStarted;
         _processingStateService.ProcessingStopped += OnProcessingStopped;
         _processingStateService.ProgressReported += OnProgressReported;
+        _processingStateService.QueueCountsChanged += OnQueueCountsChanged;
     }
 
     /// <summary>
@@ -79,7 +111,7 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     /// </summary>
     private void OnProgressReported(AnalysisProgress progress)
     {
-        MainThread.BeginInvokeOnMainThread(() =>
+        _dispatcher(() =>
         {
             CurrentProgress = progress.Completed;
             TotalItems = progress.Total;
@@ -96,7 +128,7 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     /// </summary>
     private void OnProcessingStarted(int totalCount)
     {
-        MainThread.BeginInvokeOnMainThread(() =>
+        _dispatcher(() =>
         {
             IsProcessing = true;
             CurrentProgress = 0;
@@ -111,11 +143,41 @@ public sealed partial class ProcessingStateViewModel : ObservableObject
     /// </summary>
     private void OnProcessingStopped()
     {
-        MainThread.BeginInvokeOnMainThread(() =>
+        _dispatcher(() =>
         {
             IsProcessing = false;
             StatusText = "Complete";
             StartProcessingCommand.NotifyCanExecuteChanged();
         });
+    }
+
+    /// <summary>
+    /// Invoked when QueueProcessorService reports updated queue counts.
+    /// </summary>
+    private void OnQueueCountsChanged(int folderCount, int fileCount, string? currentItem, string activeQueueName)
+    {
+        _dispatcher(() =>
+        {
+            FolderQueueCount = folderCount;
+            FileQueueCount = fileCount;
+            ActiveQueue = activeQueueName;
+            CurrentItemFull = currentItem ?? string.Empty;
+            CurrentItemShort = currentItem is not null
+                ? TruncateCenter(currentItem, 40)
+                : string.Empty;
+        });
+    }
+
+    /// <summary>
+    /// Truncates a long string with a center ellipsis so both the start and end are visible.
+    /// E.g., "C:\...\filename.jpg" for long paths.
+    /// </summary>
+    private static string TruncateCenter(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+            return value;
+
+        int half = (maxLength - 3) / 2;
+        return string.Concat(value.AsSpan(0, half), "...", value.AsSpan(value.Length - half));
     }
 }

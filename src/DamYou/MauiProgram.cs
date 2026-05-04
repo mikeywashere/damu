@@ -78,6 +78,7 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<IFolderPickerService, FolderPickerService>();
+        builder.Services.AddSingleton<IQueueSettings, DefaultQueueSettings>();
 
         // Analysis services (singletons — expensive ONNX sessions)
         builder.Services.AddSingleton<IHardwareDetectionService, HardwareDetectionService>();
@@ -100,6 +101,7 @@ public static class MauiProgram
         builder.Services.AddTransient<GalleryViewModel>();
         builder.Services.AddTransient<FoldersViewModel>();
         builder.Services.AddTransient<RunningTasksViewModel>();
+        builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<IProcessingStateService, ProcessingStateService>(); // Event broadcaster for processing state
         builder.Services.AddSingleton<IImportProgressService, ImportProgressService>(); // Event broadcaster for import progress
         builder.Services.AddSingleton<ProcessingStateViewModel>(); // UI state ViewModel
@@ -112,6 +114,13 @@ public static class MauiProgram
         // Dedicated file processor (optional, runs independently from folder scanning)
         builder.Services.AddHostedService<DedicatedFileProcessorService>();
 
+        // Multi-queue processor (folder scan queue + file processing queue)
+        builder.Services.AddSingleton<IFolderQueueService, FolderQueueService>();
+        builder.Services.AddSingleton<IFileQueueService, FileQueueService>();
+        builder.Services.AddSingleton<IQueueSettingsService>(_ => new QueueSettingsService());
+        builder.Services.AddSingleton<QueueStatusViewModel>();
+        builder.Services.AddHostedService<QueueProcessorService>();
+
         // Views
         builder.Services.AddTransient<SplashScreenView>();
         builder.Services.AddTransient<LibrarySetupModal>();
@@ -121,6 +130,7 @@ public static class MauiProgram
         builder.Services.AddTransient<GalleryView>();
         builder.Services.AddTransient<FoldersView>();
         builder.Services.AddTransient<RunningTasksView>();
+        builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<StatusBar>(); // Status bar (singleton for global state binding)
         builder.Services.AddSingleton<AppShell>();
 
@@ -159,6 +169,7 @@ public static class MauiProgram
         Routing.RegisterRoute("gallery", typeof(GalleryView));
         Routing.RegisterRoute("folders", typeof(FoldersView));
         Routing.RegisterRoute("running-tasks", typeof(RunningTasksView));
+        Routing.RegisterRoute("settings", typeof(SettingsPage));
         logger.Information("=== MauiProgram initialization completed ===");
 
         return app;
