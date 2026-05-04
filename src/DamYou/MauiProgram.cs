@@ -79,7 +79,6 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<IFolderPickerService, FolderPickerService>();
         builder.Services.AddSingleton<IQueueSettings, DefaultQueueSettings>();
-        builder.Services.AddSingleton<IVerboseLoggingService, VerboseLoggingService>();
 
         // Analysis services (singletons — expensive ONNX sessions)
         builder.Services.AddSingleton<IHardwareDetectionService, HardwareDetectionService>();

@@ -43,42 +43,6 @@
         <BoxView HeightRequest="1"
                  Color="{AppThemeBinding Light=LightGray, Dark=#3C3C3C}" />
 
-        <!-- Logging Section -->
-        <VerticalStackLayout Spacing="8">
-            <Label Text="Logging"
-                   FontSize="18"
-                   FontAttributes="Bold" />
-
-            <!-- Verbose Logging Toggle -->
-            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                <Label Text="Verbose Logging"
-                       VerticalOptions="Center"
-                       HorizontalOptions="Start" />
-                <Switch IsToggled="{Binding IsVerboseLoggingEnabled}"
-                        HorizontalOptions="End" />
-            </HorizontalStackLayout>
-
-            <!-- Log Folder Section -->
-            <Label Text="Log Folder"
-                   FontSize="14"
-                   Opacity="0.7"
-                   Margin="0,12,0,0" />
-            
-            <!-- Current Log Path Display -->
-            <Label Text="{Binding LogFolderPath}"
-                   FontSize="12"
-                   LineBreakMode="MiddleTruncation"
-                   Opacity="0.6"
-                   Margin="0,4,0,0" />
-
-            <!-- Change Log Folder Button -->
-            <Button Text="Change Log Folder"
-                    Command="{Binding PickLogFolderCommand}"
-                    HorizontalOptions="Start"
-                    Style="{StaticResource PrimaryButtonStyle}"
-                    Margin="0,8,0,0" />
-        </VerticalStackLayout>
-
     </VerticalStackLayout>
 
 </ContentPage>
