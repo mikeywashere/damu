@@ -1,4 +1,4 @@
-﻿namespace DamYou;
+namespace DamYou;
 
 using DamYou.Views;
 using Serilog;
@@ -25,6 +25,7 @@ public partial class AppShell : Shell
 			var galleryRoute = "gallery";
 			var foldersRoute = "folders";
 			var tasksRoute = "running-tasks";
+			var settingsRoute = "settings";
 
 			foreach (var item in this.Items)
 			{
@@ -55,6 +56,12 @@ public partial class AppShell : Shell
 										var tasksView = services.GetRequiredService<RunningTasksView>();
 										shellContent.Content = tasksView;
 										Log.Debug("AppShell InitializeTabContent: Assigned RunningTasksView to tasks tab");
+									}
+									else if (shellContent.Route == settingsRoute)
+									{
+										var settingsPage = services.GetRequiredService<SettingsPage>();
+										shellContent.Content = settingsPage;
+										Log.Debug("AppShell InitializeTabContent: Assigned SettingsPage to settings tab");
 									}
 								}
 							}

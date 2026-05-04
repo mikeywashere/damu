@@ -44,12 +44,12 @@ public sealed class ProcessingHostedService : IHostedService, IProcessingWorker
         _logger.LogInformation("ProcessingHostedService started (auto-timer mode)");
         _stoppingCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        // Start a timer that checks for work every 2 seconds
+        // Start a timer that checks for work every 5 seconds
         _processingTimer = new Timer(
             async (_) => await ProcessQueueIfPendingAsync(),
             null,
             TimeSpan.Zero,           // Start immediately
-            TimeSpan.FromSeconds(2)  // Check every 2 seconds
+            TimeSpan.FromSeconds(5)  // Check every 5 seconds
         );
 
         return Task.CompletedTask;

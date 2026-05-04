@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DamYou.ViewModels"
+             x:Class="DamYou.Views.SettingsPage"
+             Title="⚙️ Settings"
+             x:DataType="vm:SettingsViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <VerticalStackLayout Padding="24" Spacing="16">
+
+        <!-- Queue Processing Section -->
+        <VerticalStackLayout Spacing="8">
+            <Label Text="Queue Processing"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+
+            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                <Label Text="Wait time between queue cycles:"
+                       VerticalOptions="Center" />
+                <Entry Text="{Binding QueueWaitTimeSeconds}"
+                       Keyboard="Numeric"
+                       Placeholder="5"
+                       WidthRequest="60"
+                       HorizontalOptions="Start"
+                       VerticalOptions="Center" />
+                <Label Text="seconds"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Label Text="Minimum 1 second. Takes effect on the next processing cycle."
+                   FontSize="12"
+                   Opacity="0.6" />
+
+            <Button Text="Save"
+                    Command="{Binding SaveSettingsCommand}"
+                    HorizontalOptions="Start"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="0,4,0,0" />
+        </VerticalStackLayout>
+
+        <!-- Divider -->
+        <BoxView HeightRequest="1"
+                 Color="{AppThemeBinding Light=LightGray, Dark=#3C3C3C}" />
+
+        <!-- Placeholder for future settings -->
+        <Label Text="More settings coming soon…"
+               FontSize="14"
+               Opacity="0.5" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

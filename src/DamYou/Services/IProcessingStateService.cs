@@ -25,6 +25,12 @@ public interface IProcessingStateService
     event Action<AnalysisProgress>? ProgressReported;
 
     /// <summary>
+    /// Invoked by QueueProcessorService when queue counts change.
+    /// Args: (folderCount, fileCount, currentItem, activeQueue).
+    /// </summary>
+    event Action<int, int, string?, string>? QueueCountsChanged;
+
+    /// <summary>
     /// Notifies that processing has started.
     /// </summary>
     void NotifyProcessingStarted(int totalCount);
@@ -38,4 +44,10 @@ public interface IProcessingStateService
     /// Notifies of progress during processing.
     /// </summary>
     void NotifyProgress(AnalysisProgress progress);
+
+    /// <summary>
+    /// Notifies that queue counts have changed.
+    /// </summary>
+    void NotifyQueueCountsChanged(int folderCount, int fileCount, string? currentItem, string activeQueue);
 }
+

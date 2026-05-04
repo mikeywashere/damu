@@ -4,21 +4,25 @@
       xmlns:local="clr-namespace:DamYou.ViewModels"
       x:Class="DamYou.Views.StatusBar"
       x:DataType="local:ProcessingStateViewModel"
+      RowDefinitions="Auto,Auto"
       ColumnDefinitions="Auto,*,Auto,Auto,Auto"
       ColumnSpacing="8"
-      Padding="12"
+      RowSpacing="4"
+      Padding="12,8"
       BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}"
       x:Name="Root">
 
-    <!-- Processing Indicator (Spinner when busy, icon when idle) -->
-    <ActivityIndicator Grid.Column="0"
+    <!-- Row 0: Processing indicator + status + progress + action buttons -->
+
+    <!-- Processing Indicator (Spinner when busy, check when idle) -->
+    <ActivityIndicator Grid.Row="0" Grid.Column="0"
                        IsRunning="{Binding IsProcessing}"
                        IsVisible="{Binding IsProcessing}"
                        Color="{AppThemeBinding Light=#0078D4, Dark=#60CDFF}"
                        Scale="0.8"
                        VerticalOptions="Center" />
 
-    <Label Grid.Column="0"
+    <Label Grid.Row="0" Grid.Column="0"
            Text="✓"
            FontSize="16"
            TextColor="{AppThemeBinding Light=#107C10, Dark=#1AA260}"
@@ -27,12 +31,12 @@
            FontAttributes="Bold" />
 
     <!-- Status Text and Progress -->
-    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" VerticalOptions="Center">
         <Label Text="{Binding StatusText}"
                FontSize="13"
                FontAttributes="Bold"
                HorizontalOptions="Start" />
-        
+
         <Label Text="{Binding ProgressText}"
                FontSize="11"
                Opacity="0.7"
@@ -40,8 +44,8 @@
                IsVisible="{Binding IsProcessing}" />
     </VerticalStackLayout>
 
-    <!-- Right-aligned detail (can add more info here) -->
-    <Label Grid.Column="2"
+    <!-- Right-aligned progress detail -->
+    <Label Grid.Row="0" Grid.Column="2"
            Text="{Binding ProgressText}"
            FontSize="11"
            Opacity="0.6"
@@ -49,8 +53,8 @@
            VerticalOptions="Center"
            IsVisible="{Binding IsProcessing}" />
 
-    <!-- "Folders" Button — opens modal to manage indexed folders -->
-    <Button Grid.Column="3"
+    <!-- "Folders" Button -->
+    <Button Grid.Row="0" Grid.Column="3"
             Text="Folders"
             FontSize="12"
             Padding="8,4"
@@ -60,8 +64,8 @@
             Clicked="OnFoldersClicked"
             VerticalOptions="Center" />
 
-    <!-- "Start Processing" Button — manually trigger the photo analysis pipeline -->
-    <Button Grid.Column="4"
+    <!-- "Start Processing" Button -->
+    <Button Grid.Row="0" Grid.Column="4"
             Text="Start Processing"
             FontSize="12"
             Padding="8,4"
@@ -69,4 +73,36 @@
             Style="{StaticResource PrimaryButtonStyle}"
             Command="{Binding StartProcessingCommand}"
             VerticalOptions="Center" />
+
+    <!-- Row 1: Queue counts + current item path with tooltip -->
+    <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
+                           Spacing="16"
+                           VerticalOptions="Center">
+
+        <!-- Folder queue count badge -->
+        <Label Text="{Binding FolderQueueCount, StringFormat='📁 {0} folders'}"
+               FontSize="11"
+               Opacity="0.8" />
+
+        <!-- File queue count badge -->
+        <Label Text="{Binding FileQueueCount, StringFormat='🖼️ {0} files'}"
+               FontSize="11"
+               Opacity="0.8" />
+
+        <!-- Active queue mode -->
+        <Label Text="{Binding ActiveQueue, StringFormat='[{0}]'}"
+               FontSize="11"
+               TextColor="{AppThemeBinding Light=#0078D4, Dark=#60CDFF}"
+               IsVisible="{Binding ActiveQueue, Converter={StaticResource StringNotEmptyConverter}}" />
+
+        <!-- Current item: truncated middle with full-path tooltip on hover -->
+        <Label Text="{Binding CurrentItemFull, Converter={StaticResource TruncateMiddleConverter}}"
+               FontSize="11"
+               Opacity="0.7"
+               ToolTipProperties.Text="{Binding CurrentItemFull}"
+               IsVisible="{Binding CurrentItemFull, Converter={StaticResource StringNotEmptyConverter}}"
+               LineBreakMode="NoWrap" />
+
+    </HorizontalStackLayout>
+
 </Grid>

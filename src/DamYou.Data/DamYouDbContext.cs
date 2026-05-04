@@ -17,6 +17,8 @@ public sealed class DamYouDbContext : DbContext
     public DbSet<PhotoDetectedObject> PhotoDetectedObjects => Set<PhotoDetectedObject>();
     public DbSet<PhotoOcrText> PhotoOcrTexts => Set<PhotoOcrText>();
     public DbSet<PhotoColorPalette> PhotoColorPalettes => Set<PhotoColorPalette>();
+    public DbSet<QueuedFolder> QueuedFolders => Set<QueuedFolder>();
+    public DbSet<QueuedFile> QueuedFiles => Set<QueuedFile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -113,6 +115,28 @@ public sealed class DamYouDbContext : DbContext
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.PhotoId).IsUnique().HasDatabaseName("IX_PhotoColorPalette_PhotoId");
             e.HasOne(x => x.Photo).WithMany().HasForeignKey(x => x.PhotoId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<QueuedFolder>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.FolderPath).IsUnique().HasDatabaseName("IX_QueuedFolders_FolderPath");
+            e.HasIndex(x => x.Status).HasDatabaseName("IX_QueuedFolders_Status");
+            e.Property(x => x.Id).ValueGeneratedNever();
+            e.Property(x => x.FolderPath).IsRequired();
+            e.Property(x => x.AddedAt).IsRequired();
+            e.Property(x => x.Status).HasConversion<int>();
+        });
+
+        modelBuilder.Entity<QueuedFile>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.FilePath).IsUnique().HasDatabaseName("IX_QueuedFiles_FilePath");
+            e.HasIndex(x => x.Status).HasDatabaseName("IX_QueuedFiles_Status");
+            e.Property(x => x.Id).ValueGeneratedNever();
+            e.Property(x => x.FilePath).IsRequired();
+            e.Property(x => x.AddedAt).IsRequired();
+            e.Property(x => x.Status).HasConversion<int>();
         });
     }
 }

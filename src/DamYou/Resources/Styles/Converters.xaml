@@ -7,4 +7,5 @@
     <conv:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <conv:PercentageToProgressConverter x:Key="PercentageToProgressConverter" />
     <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+    <conv:TruncateMiddleConverter x:Key="TruncateMiddleConverter" />
 </ResourceDictionary>
