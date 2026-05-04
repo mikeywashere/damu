@@ -11,6 +11,7 @@ public sealed partial class FoldersViewModel : ObservableObject
 {
     private readonly IFolderRepository _folderRepository;
     private readonly IFolderPickerService _folderPickerService;
+    private readonly IFolderQueueService _folderQueueService;
 
     public ObservableCollection<string> SelectedFolders { get; } = new();
 
@@ -24,10 +25,12 @@ public sealed partial class FoldersViewModel : ObservableObject
 
     public FoldersViewModel(
         IFolderRepository folderRepository,
-        IFolderPickerService folderPickerService)
+        IFolderPickerService folderPickerService,
+        IFolderQueueService folderQueueService)
     {
         _folderRepository = folderRepository;
         _folderPickerService = folderPickerService;
+        _folderQueueService = folderQueueService;
         SelectedFolders.CollectionChanged += (_, _) =>
         {
             FolderCount = SelectedFolders.Count;
@@ -68,6 +71,20 @@ public sealed partial class FoldersViewModel : ObservableObject
         {
             await _folderRepository.DeactivateFolderAsync(id);
             _folderIdMap.Remove(path);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ScanFolderAsync(string path)
+    {
+        IsBusy = true;
+        try
+        {
+            await _folderQueueService.EnqueueAsync(path);
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 }
