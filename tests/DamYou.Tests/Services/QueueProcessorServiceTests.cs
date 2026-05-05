@@ -1,10 +1,8 @@
 using DamYou.Data;
-using DamYou.Data.Entities;
 using DamYou.Services;
 using DamYou.Tests.Fixtures;
 using DamYou.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -334,11 +332,11 @@ public sealed class FileQueueServiceTests
 /// </summary>
 public sealed class QueueProcessorServiceTests
 {
-    private readonly Mock<IFolderQueueService>   _folderQueue   = new();
-    private readonly Mock<IFileQueueService>     _fileQueue     = new();
-    private readonly Mock<IProcessingStateService> _state       = new();
-    private readonly Mock<ILogger<QueueProcessorService>> _log  = new();
-    private readonly Mock<IServiceScopeFactory>  _scopeFactory  = new();
+    private readonly Mock<IFolderQueueService> _folderQueue = new();
+    private readonly Mock<IFileQueueService> _fileQueue = new();
+    private readonly Mock<IProcessingStateService> _state = new();
+    private readonly Mock<ILogger<QueueProcessorService>> _log = new();
+    private readonly Mock<IServiceScopeFactory> _scopeFactory = new();
 
     private Mock<IQueueSettings> FastSettings(int startupMs = 100, int waitMs = 50)
     {
@@ -355,8 +353,7 @@ public sealed class QueueProcessorServiceTests
             settings,
             _state.Object,
             _scopeFactory.Object,
-            _log.Object,
-            new Mock<IVerboseLoggingService>().Object);
+            _log.Object);
 
     [Fact]
     public async Task StartAsync_WaitsForStartupDelay_BeforeFirstDequeue()
@@ -437,7 +434,7 @@ public sealed class QueueProcessorServiceTests
         // After several cycles both queues should each have been dequeued at least once.
         var settings = FastSettings(startupMs: 50, waitMs: 30);
         var folderDequeues = 0;
-        var fileDequeues   = 0;
+        var fileDequeues = 0;
 
         _folderQueue.Setup(q => q.GetCountAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => folderDequeues < 2 ? 1 : 0);
@@ -463,7 +460,7 @@ public sealed class QueueProcessorServiceTests
         await sut.StopAsync(CancellationToken.None);
 
         Assert.True(folderDequeues > 0, "Folder queue was never dequeued");
-        Assert.True(fileDequeues > 0,   "File queue was never dequeued");
+        Assert.True(fileDequeues > 0, "File queue was never dequeued");
     }
 
     [Fact]
@@ -544,12 +541,12 @@ public sealed class FolderScanningTests : IDisposable
 {
     private readonly SyntheticPhotoFixture _files = new();
     private readonly Mock<IFolderQueueService> _folderQueueMock = new();
-    private readonly Mock<IFileQueueService>   _fileQueueMock   = new();
-    private readonly Mock<IProcessingStateService> _stateMock   = new();
-    private readonly Mock<IServiceScopeFactory>    _scopeFactory = new();
+    private readonly Mock<IFileQueueService> _fileQueueMock = new();
+    private readonly Mock<IProcessingStateService> _stateMock = new();
+    private readonly Mock<IServiceScopeFactory> _scopeFactory = new();
 
     private readonly List<string> _enqueuedFolders = new();
-    private readonly List<string> _enqueuedFiles   = new();
+    private readonly List<string> _enqueuedFiles = new();
 
     // Set to true after the first DequeueAsync call so GetCountAsync returns 0 on the next cycle.
     private volatile bool _folderConsumed;
@@ -606,8 +603,7 @@ public sealed class FolderScanningTests : IDisposable
             settings.Object,
             _stateMock.Object,
             _scopeFactory.Object,
-            new Mock<ILogger<QueueProcessorService>>().Object,
-            new Mock<IVerboseLoggingService>().Object);
+            new Mock<ILogger<QueueProcessorService>>().Object);
     }
 
     [Fact]
@@ -678,7 +674,7 @@ public sealed class FolderScanningTests : IDisposable
     [Fact]
     public async Task ProcessFolder_NonImageFiles_AreNotEnqueued()
     {
-        File.WriteAllText(Path.Combine(_files.RootDirectory, "doc.txt"),  "text");
+        File.WriteAllText(Path.Combine(_files.RootDirectory, "doc.txt"), "text");
         File.WriteAllText(Path.Combine(_files.RootDirectory, "arch.zip"), "zip");
         File.WriteAllText(Path.Combine(_files.RootDirectory, "clip.mp4"), "video");
         File.WriteAllText(Path.Combine(_files.RootDirectory, "thumb.db"), "db");
@@ -865,9 +861,9 @@ public sealed class QueueSettingsTests
 /// </summary>
 public sealed class ProcessingStateViewModelQueueTests
 {
-    private readonly Mock<IProcessingWorker>        _workerMock = new();
-    private readonly Mock<IProcessingStateService>  _stateMock  = new();
-    private readonly ProcessingStateViewModel       _vm;
+    private readonly Mock<IProcessingWorker> _workerMock = new();
+    private readonly Mock<IProcessingStateService> _stateMock = new();
+    private readonly ProcessingStateViewModel _vm;
 
     public ProcessingStateViewModelQueueTests()
     {
@@ -895,7 +891,7 @@ public sealed class ProcessingStateViewModelQueueTests
     public void BothQueueCounts_UpdateTogether()
     {
         RaiseQueueCounts(folders: 4, files: 12, queue: "Both");
-        Assert.Equal(4,  _vm.FolderQueueCount);
+        Assert.Equal(4, _vm.FolderQueueCount);
         Assert.Equal(12, _vm.FileQueueCount);
     }
 
@@ -977,8 +973,8 @@ public sealed class ProcessingStateViewModelQueueTests
     [Fact]
     public void InitialState_QueueCountsAreZeroAndQueueIsIdle()
     {
-        Assert.Equal(0,      _vm.FolderQueueCount);
-        Assert.Equal(0,      _vm.FileQueueCount);
+        Assert.Equal(0, _vm.FolderQueueCount);
+        Assert.Equal(0, _vm.FileQueueCount);
         Assert.Equal("Idle", _vm.ActiveQueue);
         Assert.Equal(string.Empty, _vm.CurrentItemFull);
         Assert.Equal(string.Empty, _vm.CurrentItemShort);

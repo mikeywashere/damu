@@ -16,17 +16,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly IPreferences _preferences;
     private readonly Action<Action> _dispatcher;
 
-    private const string VerboseLoggingKey = "verbose_logging_enabled";
-    private const string LogFolderPathKey = "log_folder_path";
-
     [ObservableProperty]
     private string queueWaitTimeSeconds = string.Empty;
-
-    [ObservableProperty]
-    private bool isVerboseLoggingEnabled;
-
-    [ObservableProperty]
-    private string logFolderPath = string.Empty;
 
     public SettingsViewModel(
         IQueueSettings queueSettings,
@@ -45,9 +36,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         int seconds = _queueSettings.GetQueueWaitTimeMs() / 1000;
         QueueWaitTimeSeconds = seconds.ToString();
-        
-        IsVerboseLoggingEnabled = _preferences.Get(VerboseLoggingKey, false);
-        LogFolderPath = _preferences.Get(LogFolderPathKey, string.Empty);
     }
 
     [RelayCommand]
@@ -65,31 +53,6 @@ public sealed partial class SettingsViewModel : ObservableObject
                     await Application.Current.MainPage.DisplayAlert(
                         "Saved",
                         $"Queue wait time set to {seconds} second{(seconds == 1 ? "" : "s")}",
-                        "OK");
-            });
-        }
-    }
-
-    partial void OnIsVerboseLoggingEnabledChanged(bool value)
-    {
-        _preferences.Set(VerboseLoggingKey, value);
-    }
-
-    [RelayCommand]
-    private async Task PickLogFolderAsync()
-    {
-        var path = await _folderPickerService.PickFolderAsync();
-        if (path is not null)
-        {
-            LogFolderPath = path;
-            _preferences.Set(LogFolderPathKey, path);
-
-            _dispatcher(async () =>
-            {
-                if (Application.Current?.MainPage is not null)
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Folder Selected",
-                        $"Log folder set to:\n{path}",
                         "OK");
             });
         }
