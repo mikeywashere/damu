@@ -136,6 +136,20 @@ public sealed class FileQueueService : IFileQueueService
             .ToListAsync(ct);
     }
 
+    public async Task RemoveAsync(string filePath, CancellationToken ct = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
+
+        var item = await db.QueuedFiles
+            .FirstOrDefaultAsync(f => f.FilePath == filePath, ct);
+
+        if (item is null) return;
+        db.QueuedFiles.Remove(item);
+        await db.SaveChangesAsync(ct);
+        _logger.LogDebug("Removed file from queue: {FilePath}", filePath);
+    }
+
     public async Task ClearAsync(CancellationToken ct = default)
     {
         using var scope = _scopeFactory.CreateScope();

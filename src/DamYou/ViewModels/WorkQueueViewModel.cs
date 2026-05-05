@@ -70,6 +70,34 @@ public sealed partial class WorkQueueViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task RemoveFolder(QueuedFolder folder)
+    {
+        try
+        {
+            await _folderQueue.RemoveAsync(folder.FolderPath);
+            QueuedFolders.Remove(folder);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error removing folder from queue: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task RemoveFile(QueuedFile file)
+    {
+        try
+        {
+            await _fileQueue.RemoveAsync(file.FilePath);
+            QueuedFiles.Remove(file);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error removing file from queue: {ex.Message}");
+        }
+    }
+
     private async Task RefreshPeriodicAsync(CancellationToken ct)
     {
         try

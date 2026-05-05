@@ -141,6 +141,20 @@ public sealed class FolderQueueService : IFolderQueueService
             .ToListAsync(ct);
     }
 
+    public async Task RemoveAsync(string folderPath, CancellationToken ct = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DamYouDbContext>();
+
+        var item = await db.QueuedFolders
+            .FirstOrDefaultAsync(f => f.FolderPath == folderPath, ct);
+
+        if (item is null) return;
+        db.QueuedFolders.Remove(item);
+        await db.SaveChangesAsync(ct);
+        _logger.LogDebug("Removed folder from queue: {FolderPath}", folderPath);
+    }
+
     public async Task ClearAsync(CancellationToken ct = default)
     {
         using var scope = _scopeFactory.CreateScope();

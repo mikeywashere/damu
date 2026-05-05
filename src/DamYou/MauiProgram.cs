@@ -8,7 +8,6 @@ using DamYou.ViewModels;
 using DamYou.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace DamYou;
 
@@ -16,28 +15,9 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        // Parse command-line arguments early
-        var args = Environment.GetCommandLineArgs();
-        
-        // DEBUG: Log raw command-line arguments to Visual Studio output
-        Debug.WriteLine($"[MauiProgram] Environment.GetCommandLineArgs() returned {args.Length} arguments:");
-        for (int i = 0; i < args.Length; i++)
-        {
-            Debug.WriteLine($"  [{i}]: {args[i]}");
-        }
-        
-        var parsedArgs = CommandLineParser.Parse(args);
-        Debug.WriteLine($"[MauiProgram] Parsed log file path: {parsedArgs.LogFilePath ?? "(null)"}");
-        
-        LoggingService.ConfigureLogging(parsedArgs.LogFilePath);
         var logger = LoggingService.GetLogger();
-        
+
         logger.Information("=== DAMu App Initialization Started ===");
-        logger.Information("Command-line arguments: {Args}", string.Join(" ", args));
-        if (parsedArgs.LogFilePath != null)
-        {
-            logger.Information("Logging to: {LogPath}", parsedArgs.LogFilePath);
-        }
 
         var builder = MauiApp.CreateBuilder();
 #pragma warning disable HAA0301 // Closure Allocation Source
@@ -108,7 +88,7 @@ public static class MauiProgram
         builder.Services.AddLogging(c => c.AddDebug());
         builder.Services.AddSingleton<IProcessingWorker, ProcessingHostedService>();
         builder.Services.AddHostedService(sp => sp.GetRequiredService<ProcessingHostedService>());
-        
+
         // Dedicated file processor (optional, runs independently from folder scanning)
         builder.Services.AddHostedService<DedicatedFileProcessorService>();
 

@@ -11,4 +11,5 @@ public interface IFolderQueueService : IQueueService<string>
     Task MarkCompleteAsync(string folderPath, CancellationToken ct = default);
     Task MarkFailedAsync(string folderPath, CancellationToken ct = default);
     Task<IReadOnlyList<QueuedFolder>> GetActiveItemsAsync(CancellationToken ct = default);
+    Task RemoveAsync(string folderPath, CancellationToken ct = default);
 }
