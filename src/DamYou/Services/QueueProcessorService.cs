@@ -171,13 +171,23 @@ public sealed class QueueProcessorService : IHostedService
             }
 
             // Guard against symlink cycles — use a visited set (per-scan in-memory)
-            foreach (var subDir in Directory.EnumerateDirectories(folderPath))
+            var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            visitedPaths.Add(Path.GetFullPath(folderPath));
+
+            foreach (string subDir in Directory.EnumerateDirectories(folderPath).Where(d => d is not null).ToList())
             {
                 ct.ThrowIfCancellationRequested();
+                string canonicalPath = Path.GetFullPath(subDir);
+                if (visitedPaths.Contains(canonicalPath))
+                {
+                    _logger.LogWarning("Symlink cycle detected, skipping: {CanonicalPath}", canonicalPath);
+                    continue;
+                }
+                visitedPaths.Add(canonicalPath);
                 await _folderQueue.EnqueueAsync(subDir, ct);
             }
 
-            foreach (var file in Directory.EnumerateFiles(folderPath))
+            foreach (var file in Directory.EnumerateFiles(folderPath).Where(f => f is not null).ToList())
             {
                 ct.ThrowIfCancellationRequested();
                 if (SupportedExtensions.Contains(Path.GetExtension(file)))
@@ -193,6 +203,12 @@ public sealed class QueueProcessorService : IHostedService
             _logger.LogError(ex, "Error scanning folder: {FolderPath}", folderPath);
             await _folderQueue.MarkFailedAsync(folderPath, CancellationToken.None);
         }
+    }
+
+    private bool PhotoAlreadyQueued(PipelineTask pt, Photo photo)
+    {
+        return pt.PhotoId == photo.Id
+                  && (pt.Status == PipelineTaskStatus.Queued || pt.Status == PipelineTaskStatus.Running);
     }
 
     private async Task ProcessFileAsync(CancellationToken ct)
@@ -253,8 +269,8 @@ public sealed class QueueProcessorService : IHostedService
             }
 
             // Create a pipeline task if not already queued for this photo
-            var alreadyQueued = await db.PipelineTasks.AnyAsync(
-                t => t.PhotoId == photo.Id
+            var alreadyQueued = await db.PipelineTasks.AnyAsync(t =>
+                t.PhotoId == photo.Id
                   && (t.Status == PipelineTaskStatus.Queued || t.Status == PipelineTaskStatus.Running), ct);
 
             if (!alreadyQueued && photo.Status == ProcessingStatus.Unprocessed)
