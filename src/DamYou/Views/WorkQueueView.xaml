@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:DamYou.ViewModels"
              xmlns:entities="clr-namespace:DamYou.Data.Entities;assembly=DamYou.Data"
              x:Class="DamYou.Views.WorkQueueView"
+             x:Name="WorkQueuePage"
              x:DataType="vm:WorkQueueViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              Loaded="OnPageLoaded">
@@ -86,7 +87,7 @@
                                             Text="🗑️"
                                             BackgroundColor="Transparent"
                                             TextColor="#E64A19"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkQueueViewModel}}, Path=RemoveFolderCommand}"
+                                            Command="{Binding BindingContext.RemoveFolderCommand, Source={x:Reference WorkQueuePage}}"
                                             CommandParameter="{Binding .}"
                                             WidthRequest="48"
                                             HeightRequest="48" />
@@ -129,7 +130,7 @@
                                             Text="🗑️"
                                             BackgroundColor="Transparent"
                                             TextColor="#E64A19"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkQueueViewModel}}, Path=RemoveFileCommand}"
+                                            Command="{Binding BindingContext.RemoveFileCommand, Source={x:Reference WorkQueuePage}}"
                                             CommandParameter="{Binding .}"
                                             WidthRequest="48"
                                             HeightRequest="48" />

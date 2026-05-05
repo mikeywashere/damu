@@ -6,3 +6,5 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "HAA0301:Closure Allocation Source", Justification = "<Pending>", Scope = "member", Target = "~M:DamYou.MauiProgram.CreateMauiApp~Microsoft.Maui.Hosting.MauiApp")]
+[assembly: SuppressMessage("Performance", "HAA0101:Array allocation for params parameter", Justification = "<Pending>", Scope = "member", Target = "~M:DamYou.Services.QueueProcessorService.ProcessFileAsync(System.Threading.CancellationToken)~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Performance", "HAA0101:Array allocation for params parameter", Justification = "<Pending>", Scope = "member", Target = "~M:DamYou.Services.QueueProcessorService.ProcessFolderAsync(System.String,System.Threading.CancellationToken)~System.Threading.Tasks.Task")]
