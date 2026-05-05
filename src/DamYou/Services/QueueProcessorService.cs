@@ -132,6 +132,8 @@ public sealed class QueueProcessorService : IHostedService
                     if (fp is not null)
                     {
                         await ProcessFolderAsync(fp, ct);
+                        // Add CPU-friendly delay after processing folder
+                        await Task.Delay(_queueSettings.GetProcessingDelayMs(), ct);
                         continue;
                     }
                 }
@@ -140,6 +142,8 @@ public sealed class QueueProcessorService : IHostedService
                 if (fileCount > 0)
                 {
                     await ProcessFileAsync(ct);
+                    // Add CPU-friendly delay after processing file
+                    await Task.Delay(_queueSettings.GetProcessingDelayMs(), ct);
                     continue;
                 }
             }

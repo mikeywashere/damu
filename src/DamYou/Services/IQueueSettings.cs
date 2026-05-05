@@ -21,4 +21,14 @@ public interface IQueueSettings
 
     /// <summary>Persists the startup delay. No-op by default; concrete implementations may override.</summary>
     void SetStartupDelayMs(int ms) { }
+
+    /// <summary>
+    /// Returns the delay between processing items (folders or files) in milliseconds.
+    /// Applied ONLY when actively processing to reduce CPU load on slower systems.
+    /// NO delay during idle waits. Default is 250 ms.
+    /// </summary>
+    int GetProcessingDelayMs() => 250;
+
+    /// <summary>Persists the processing delay between items.</summary>
+    void SetProcessingDelayMs(int ms) { }
 }
