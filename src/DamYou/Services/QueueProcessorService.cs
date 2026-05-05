@@ -16,10 +16,10 @@ namespace DamYou.Services;
 /// - StopAsync: cancels the loop and waits for it to finish.
 ///
 /// Processing logic:
-/// - Both queues have items → one folder tick then one file tick per cycle
-/// - Only folders → process folder only
-/// - Only files → process file only
-/// - Both empty → idle, wait for next cycle
+/// - When both queues have items: process folders first (priority), then files
+/// - When only folders exist: process folders continuously until exhausted
+/// - When only files exist: process files continuously until exhausted
+/// - When both empty: idle for 1 minute, then check again
 ///
 /// Folder processing:
 ///   Dequeue folder → scan sub-directories (enqueue) → scan image files (enqueue to file queue)
@@ -46,7 +46,6 @@ public sealed class QueueProcessorService : IHostedService
     private readonly IProcessingStateService _processingState;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<QueueProcessorService> _logger;
-    private int current = 0;
 
     private CancellationTokenSource? _cts;
     private Task? _loopTask;
@@ -106,6 +105,8 @@ public sealed class QueueProcessorService : IHostedService
 
     private async Task ProcessingLoopAsync(CancellationToken ct)
     {
+        const int IdleWaitMs = 60_000; // 1 minute idle wait when both queues empty
+
         while (!ct.IsCancellationRequested)
         {
             try
@@ -113,13 +114,19 @@ public sealed class QueueProcessorService : IHostedService
                 var folderCount = await _folderQueue.GetCountAsync(ct);
                 var fileCount = await _fileQueue.GetCountAsync(ct);
 
-                int waitMs = _queueSettings.GetQueueWaitTimeMs();
-                await Task.Delay(waitMs, ct);
-
                 string activeQueue = DetermineActiveQueue(folderCount, fileCount);
                 _processingState.NotifyQueueCountsChanged(folderCount, fileCount, null, activeQueue);
 
-                if (current == 0)
+                // If both queues empty, idle for 1 minute before checking again
+                if (folderCount == 0 && fileCount == 0)
+                {
+                    _logger.LogDebug("Both queues empty, idling for 1 minute");
+                    await Task.Delay(IdleWaitMs, ct);
+                    continue;
+                }
+
+                // Process folders in priority: prioritize folders if available
+                if (folderCount > 0)
                 {
                     var fp = await _folderQueue.DequeueAsync(ct);
                     if (fp is not null)
@@ -128,13 +135,13 @@ public sealed class QueueProcessorService : IHostedService
                         continue;
                     }
                 }
-                if (current == 1)
+
+                // Process files if folders are exhausted
+                if (fileCount > 0)
                 {
                     await ProcessFileAsync(ct);
                     continue;
                 }
-                // else both empty — idle
-
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -144,11 +151,6 @@ public sealed class QueueProcessorService : IHostedService
             {
                 _logger.LogError(ex, "Unexpected error in QueueProcessorService loop");
             }
-            finally
-            {
-                current = (current + 1) % 2; // alternate between 0 and 1 for folder/file priority;
-            }
-
         }
     }
 
