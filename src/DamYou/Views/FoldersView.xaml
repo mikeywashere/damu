@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DamYou.ViewModels"
              x:Class="DamYou.Views.FoldersView"
+             x:Name="FoldersPage"
              x:DataType="vm:FoldersViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              Loaded="OnPageLoaded">
@@ -69,7 +70,7 @@
                                     Text="🔄"
                                     BackgroundColor="Transparent"
                                     TextColor="#1976D2"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FoldersViewModel}}, Path=ScanFolderCommand}"
+                                    Command="{Binding BindingContext.ScanFolderCommand, Source={x:Reference FoldersPage}}"
                                     CommandParameter="{Binding .}"
                                     WidthRequest="48"
                                     HeightRequest="48" />
@@ -79,7 +80,7 @@
                                     Text="🗑️"
                                     BackgroundColor="Transparent"
                                     TextColor="#E64A19"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FoldersViewModel}}, Path=RemoveFolderCommand}"
+                                    Command="{Binding BindingContext.RemoveFolderCommand, Source={x:Reference FoldersPage}}"
                                     CommandParameter="{Binding .}"
                                     WidthRequest="48"
                                     HeightRequest="48" />
