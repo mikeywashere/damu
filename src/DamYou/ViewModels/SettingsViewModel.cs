@@ -7,35 +7,54 @@ namespace DamYou.ViewModels;
 
 /// <summary>
 /// ViewModel for the Settings page. Loads/saves queue processing configuration
-/// via IQueueSettings. Parker's multi-queue implementation provides the concrete service.
+/// via IQueueSettings and logging configuration via ILoggingSettings.
+/// Parker's multi-queue implementation provides the concrete service.
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly IQueueSettings _queueSettings;
+    private readonly ILoggingSettings _loggingSettings;
     private readonly IFolderPickerService _folderPickerService;
     private readonly IPreferences _preferences;
     private readonly Action<Action> _dispatcher;
+    private bool _isLoading = true;
 
     [ObservableProperty]
     private string queueWaitTimeSeconds = string.Empty;
 
+    [ObservableProperty]
+    private bool isVerboseLoggingEnabled;
+
     public SettingsViewModel(
         IQueueSettings queueSettings,
+        ILoggingSettings loggingSettings,
         IFolderPickerService folderPickerService,
         Action<Action>? dispatcher = null,
         IPreferences? preferences = null)
     {
         _queueSettings = queueSettings;
+        _loggingSettings = loggingSettings;
         _folderPickerService = folderPickerService;
         _dispatcher = dispatcher ?? MainThread.BeginInvokeOnMainThread;
         _preferences = preferences ?? Preferences.Default;
         LoadSettings();
+        _isLoading = false;
     }
 
     private void LoadSettings()
     {
         int seconds = _queueSettings.GetQueueWaitTimeMs() / 1000;
         QueueWaitTimeSeconds = seconds.ToString();
+        IsVerboseLoggingEnabled = _loggingSettings.IsVerboseLoggingEnabled();
+    }
+
+    partial void OnIsVerboseLoggingEnabledChanged(bool value)
+    {
+        // Only persist and apply changes after initial load
+        if (_isLoading) return;
+        
+        _loggingSettings.SetVerboseLoggingEnabled(value);
+        LoggingService.SetVerboseLogging(value);
     }
 
     [RelayCommand]

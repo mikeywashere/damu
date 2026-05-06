@@ -95,7 +95,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DamYou.Data\DamYou.Data.csproj" />
+		<ProjectReference Include="..\DamYou.Data\damu.Data.csproj" />
 	</ItemGroup>
 
 </Project>

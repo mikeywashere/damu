@@ -2,6 +2,7 @@ using DamYou.Data.Repositories;
 using DamYou.Services;
 using DamYou.ViewModels;
 using DamYou.Views;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace DamYou;
@@ -30,34 +31,69 @@ public partial class App : Application
         Log.Debug("App constructor: Resolving ProcessingStateViewModel...");
         // Cache the ProcessingStateViewModel for XAML binding via x:Static
         ProcessingState = services.GetRequiredService<ProcessingStateViewModel>();
+        
+        // CRITICAL: Set MainPage immediately (synchronously) in the constructor.
+        // MAUI requires MainPage to be set BEFORE app initialization completes.
+        // Set it to SplashScreenView, then proceed with async operations.
+        Log.Debug("App constructor: Setting MainPage to SplashScreenView (synchronous)...");
+        var splashScreen = services.GetRequiredService<SplashScreenView>();
+        MainPage = splashScreen;
+        Log.Information("App constructor: MainPage set to SplashScreenView");
+        
+        Log.Debug("App constructor: Starting hosted services and splash transition...");
+        var splashStartTime = DateTime.UtcNow;
+        
+        // CRITICAL: Use Task.Run() to ensure async execution, not just fire-and-forget
+        // Fire-and-forget (_) doesn't guarantee execution in MAUI constructor context
+        Task.Run(async () => await StartHostedServicesAsync());
+        _ = SplashTransitionAsync(splashStartTime);
+        
         Log.Information("App constructor: Initialization complete");
     }
 
-    protected override Window CreateWindow(IActivationState? activationState)
+    /// <summary>
+    /// Manually start hosted services.
+    /// MAUI's MauiApp does NOT automatically call StartAsync on IHostedService implementations
+    /// like the .NET Generic Host does. This method bridges that gap.
+    /// </summary>
+    private async Task StartHostedServicesAsync()
     {
-        Log.Information("CreateWindow: Starting splash screen presentation...");
-        var startTime = DateTime.UtcNow;
-        
-        // Start with splash screen (wrapped in NavigationPage temporarily)
-        Log.Debug("CreateWindow: Resolving SplashScreenView...");
-        var splashPage = _services.GetRequiredService<SplashScreenView>();
-        var navPage = new NavigationPage(splashPage);
-        
-        // Register handler for page unloaded to flush logs on app shutdown
-        navPage.Unloaded += OnPageUnloaded;
-        
-        var window = new Window(navPage)
+        try
         {
-            Title = "DAMu",
-            MinimumWidth = 800,
-            MinimumHeight = 600,
-        };
-
-        Log.Information("CreateWindow: Window created with splash screen");
-        // After 2 seconds, transition to AppShell (NOT wrapped in NavigationPage)
-        _ = SplashTransitionAsync(startTime);
-
-        return window;
+            Log.Information("[HOSTED_SERVICES] StartHostedServicesAsync starting...");
+            
+            var hostedServices = _services.GetServices<IHostedService>().ToList();
+            Log.Information("[HOSTED_SERVICES] Found {Count} hosted services", hostedServices.Count);
+            
+            if (hostedServices.Count == 0)
+            {
+                Log.Warning("[HOSTED_SERVICES] No hosted services found in DI container");
+                return;
+            }
+            
+            foreach (var service in hostedServices)
+            {
+                var serviceName = service.GetType().Name;
+                Log.Information("[HOSTED_SERVICES] About to start: {ServiceType}", serviceName);
+                
+                try
+                {
+                    await service.StartAsync(CancellationToken.None);
+                    Log.Information("[HOSTED_SERVICES] Successfully started: {ServiceType}", serviceName);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "[HOSTED_SERVICES] Failed to start {ServiceType}", serviceName);
+                    throw;
+                }
+            }
+            
+            Log.Information("[HOSTED_SERVICES] All hosted services started successfully");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[HOSTED_SERVICES] Error in StartHostedServicesAsync");
+        }
     }
 
     /// <summary>

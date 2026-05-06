@@ -15,4 +15,5 @@ public interface IPhotoRepository
     Task<List<Photo>> GetPageAsync(int skip, int take, CancellationToken ct = default);
     Task<List<Photo>> SearchAsync(string searchText, int skip, int take, CancellationToken ct = default);
     Task<List<string>> GetDuplicatePathsAsync(int photoId, CancellationToken ct = default);
+    Task<Photo?> GetPhotoWithRelationsAsync(int photoId, CancellationToken ct = default);
 }

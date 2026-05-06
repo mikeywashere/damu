@@ -8,4 +8,5 @@
     <conv:PercentageToProgressConverter x:Key="PercentageToProgressConverter" />
     <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
     <conv:TruncateMiddleConverter x:Key="TruncateMiddleConverter" />
+    <conv:ColorPaletteJsonToStringConverter x:Key="ColorPaletteJsonToStringConverter" />
 </ResourceDictionary>

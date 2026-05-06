@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DamYou.Data.Entities;
+using DamYou.Extensions;
 using DamYou.Services;
-using System.Collections.ObjectModel;
 
 namespace DamYou.ViewModels;
 
@@ -12,8 +12,8 @@ public sealed partial class WorkQueueViewModel : ObservableObject
     private readonly IFileQueueService _fileQueue;
     private CancellationTokenSource? _refreshCts;
 
-    public ObservableCollection<QueuedFolder> QueuedFolders { get; } = new();
-    public ObservableCollection<QueuedFile> QueuedFiles { get; } = new();
+    public RangableObservableCollection<QueuedFolder> QueuedFolders { get; } = new();
+    public RangableObservableCollection<QueuedFile> QueuedFiles { get; } = new();
 
     public bool HasFolders => QueuedFolders.Count > 0;
     public bool HasFiles => QueuedFiles.Count > 0;
@@ -53,12 +53,10 @@ public sealed partial class WorkQueueViewModel : ObservableObject
             var files = await _fileQueue.GetActiveItemsAsync(ct);
 
             QueuedFolders.Clear();
-            foreach (var folder in folders)
-                QueuedFolders.Add(folder);
+            QueuedFolders.AddRange(folders);
 
             QueuedFiles.Clear();
-            foreach (var file in files)
-                QueuedFiles.Add(file);
+            QueuedFiles.AddRange(files);
         }
         catch (OperationCanceledException)
         {

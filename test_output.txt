@@ -1,0 +1,292 @@
+Test run for C:\src\mikeywashere\dam-you\tests\DamYou.Tests\bin\Debug\net10.0-windows10.0.19041.0\win-x64\DamYou.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:01.11]     DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Error_Recovery [SKIP]
+[xUnit.net 00:00:01.13]     DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Complete_Setup_To_Processing [SKIP]
+[xUnit.net 00:00:01.13]     DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Progress_Updates_Bind_To_UI [SKIP]
+[xUnit.net 00:00:01.13]     DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Cancellation_On_Shutdown [SKIP]
+  Skipped DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Error_Recovery [1 ms]
+  Skipped DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Complete_Setup_To_Processing [1 ms]
+  Skipped DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Progress_Updates_Bind_To_UI [1 ms]
+  Skipped DamYou.Tests.ScanToProcessIntegrationTests.Scenario_Cancellation_On_Shutdown [1 ms]
+[xUnit.net 00:00:01.32]     DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_LoadsQueueWaitTimeFromSettings [FAIL]
+  Failed DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_LoadsQueueWaitTimeFromSettings [194 ms]
+  Error Message:
+   System.TypeInitializationException : The type initializer for 'Microsoft.Maui.Storage.UnpackagedPreferencesImplementation' threw an exception.
+---- System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation.Load()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.PreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.Preferences.get_Default()
+   at DamYou.ViewModels.SettingsViewModel..ctor(IQueueSettings queueSettings, IFolderPickerService folderPickerService, Action`1 dispatcher, IPreferences preferences) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\SettingsViewModel.cs:line 31
+   at DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_LoadsQueueWaitTimeFromSettings() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Services\QueueProcessorServiceTests.cs:line 805
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+----- Inner Stack Trace -----
+   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.AppInfoImplementation..ctor()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_Current()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_PackageName()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppSpecificPath()
+   at Microsoft.Maui.Storage.FileSystemImplementation.<>c.<.ctor>b__17_1()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_PlatformAppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystem.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..cctor()
+[xUnit.net 00:00:01.33]     DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_PersistsValueToSettings [FAIL]
+[xUnit.net 00:00:01.34]     DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_IgnoresNonNumericInput [FAIL]
+[xUnit.net 00:00:01.34]     DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_EnforcesMinimumOneSecond [FAIL]
+  Failed DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_PersistsValueToSettings [1 ms]
+  Error Message:
+   System.TypeInitializationException : The type initializer for 'Microsoft.Maui.Storage.UnpackagedPreferencesImplementation' threw an exception.
+---- System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation.Load()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.PreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.Preferences.get_Default()
+   at DamYou.ViewModels.SettingsViewModel..ctor(IQueueSettings queueSettings, IFolderPickerService folderPickerService, Action`1 dispatcher, IPreferences preferences) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\SettingsViewModel.cs:line 31
+   at DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_PersistsValueToSettings() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Services\QueueProcessorServiceTests.cs:line 817
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+----- Inner Stack Trace -----
+   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.AppInfoImplementation..ctor()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_Current()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_PackageName()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppSpecificPath()
+   at Microsoft.Maui.Storage.FileSystemImplementation.<>c.<.ctor>b__17_1()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_PlatformAppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystem.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..cctor()
+  Failed DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_IgnoresNonNumericInput [< 1 ms]
+  Error Message:
+   System.TypeInitializationException : The type initializer for 'Microsoft.Maui.Storage.UnpackagedPreferencesImplementation' threw an exception.
+---- System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation.Load()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.PreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.Preferences.get_Default()
+   at DamYou.ViewModels.SettingsViewModel..ctor(IQueueSettings queueSettings, IFolderPickerService folderPickerService, Action`1 dispatcher, IPreferences preferences) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\SettingsViewModel.cs:line 31
+   at DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_IgnoresNonNumericInput() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Services\QueueProcessorServiceTests.cs:line 845
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+----- Inner Stack Trace -----
+   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.AppInfoImplementation..ctor()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_Current()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_PackageName()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppSpecificPath()
+   at Microsoft.Maui.Storage.FileSystemImplementation.<>c.<.ctor>b__17_1()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_PlatformAppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystem.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..cctor()
+  Failed DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_EnforcesMinimumOneSecond [< 1 ms]
+  Error Message:
+   System.TypeInitializationException : The type initializer for 'Microsoft.Maui.Storage.UnpackagedPreferencesImplementation' threw an exception.
+---- System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation.Load()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.PreferencesImplementation..ctor()
+   at Microsoft.Maui.Storage.Preferences.get_Default()
+   at DamYou.ViewModels.SettingsViewModel..ctor(IQueueSettings queueSettings, IFolderPickerService folderPickerService, Action`1 dispatcher, IPreferences preferences) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\SettingsViewModel.cs:line 31
+   at DamYou.Tests.Services.QueueSettingsTests.SettingsViewModel_SaveCommand_EnforcesMinimumOneSecond() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Services\QueueProcessorServiceTests.cs:line 831
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+----- Inner Stack Trace -----
+   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.AppInfoImplementation..ctor()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_Current()
+   at Microsoft.Maui.ApplicationModel.AppInfo.get_PackageName()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppSpecificPath()
+   at Microsoft.Maui.Storage.FileSystemImplementation.<>c.<.ctor>b__17_1()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_PlatformAppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystemImplementation.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.FileSystem.get_AppDataDirectory()
+   at Microsoft.Maui.Storage.UnpackagedPreferencesImplementation..cctor()
+[xUnit.net 00:00:01.40]     DamYou.Tests.ViewModels.GalleryViewModelTests.CurrentPage_UpdatesAsPhotosLoad [FAIL]
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.CurrentPage_UpdatesAsPhotosLoad [8 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   2
+  Stack Trace:
+     at DamYou.Tests.ViewModels.GalleryViewModelTests.CurrentPage_UpdatesAsPhotosLoad() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 236
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:01.55]     DamYou.Tests.ViewModels.GalleryViewModelTests.CancellationToken_StopsLoadingOperation [FAIL]
+[xUnit.net 00:00:01.59]     DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 1920, height: 1080, cellSize: 120) [FAIL]
+[xUnit.net 00:00:01.60]     DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 800, height: 600, cellSize: 120) [FAIL]
+[xUnit.net 00:00:01.61]     DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 1024, height: 768, cellSize: 120) [FAIL]
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.CancellationToken_StopsLoadingOperation [133 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at DamYou.Tests.ViewModels.GalleryViewModelTests.CancellationToken_StopsLoadingOperation() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 686
+--- End of stack trace from previous location ---
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 1920, height: 1080, cellSize: 120) [34 ms]
+  Error Message:
+   System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(Action action)
+   at DamYou.ViewModels.GalleryViewModel.SetGridDimensions(Double gridWidth, Double gridHeight) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\GalleryViewModel.cs:line 112
+   at DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(Double width, Double height, Double cellSize) in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 258
+--- End of stack trace from previous location ---
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 800, height: 600, cellSize: 120) [10 ms]
+  Error Message:
+   System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(Action action)
+   at DamYou.ViewModels.GalleryViewModel.SetGridDimensions(Double gridWidth, Double gridHeight) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\GalleryViewModel.cs:line 112
+   at DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(Double width, Double height, Double cellSize) in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 258
+--- End of stack trace from previous location ---
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(width: 1024, height: 768, cellSize: 120) [7 ms]
+  Error Message:
+   System.Runtime.InteropServices.COMException : ClassFactory cannot supply requested class
+
+  Stack Trace:
+     at System.Runtime.InteropServices.Marshal.ThrowExceptionForHR(Int32 errorCode)
+   at WinRT.ActivationFactory.Get(String typeName, Guid iid)
+   at Microsoft.UI.Dispatching.DispatcherQueue.get__objRef_global__Microsoft_UI_Dispatching_IDispatcherQueueStatics()
+   at Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.TryGetDispatcherQueue()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_PlatformIsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.get_IsMainThread()
+   at Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(Action action)
+   at DamYou.ViewModels.GalleryViewModel.SetGridDimensions(Double gridWidth, Double gridHeight) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\GalleryViewModel.cs:line 112
+   at DamYou.Tests.ViewModels.GalleryViewModelTests.SetGridDimensions_CalculatesPageSize_BasedOnViewportAndCellSize(Double width, Double height, Double cellSize) in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 258
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:01.76]     DamYou.Tests.ViewModels.GalleryViewModelTests.LoadMorePhotosCommand_DoesNotExecute_WhenAlreadyLoading [FAIL]
+  Failed DamYou.Tests.ViewModels.GalleryViewModelTests.LoadMorePhotosCommand_DoesNotExecute_WhenAlreadyLoading [117 ms]
+  Error Message:
+   System.Threading.Tasks.TaskCanceledException : A task was canceled.
+  Stack Trace:
+     at DamYou.Tests.ViewModels.GalleryViewModelTests.<>c__DisplayClass7_0.<<LoadMorePhotosCommand_DoesNotExecute_WhenAlreadyLoading>b__1>d.MoveNext() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 142
+--- End of stack trace from previous location ---
+   at DamYou.ViewModels.GalleryViewModel.LoadMorePhotosAsync(CancellationToken ct) in C:\src\mikeywashere\dam-you\src\DamYou\ViewModels\GalleryViewModel.cs:line 290
+   at DamYou.Tests.ViewModels.GalleryViewModelTests.LoadMorePhotosCommand_DoesNotExecute_WhenAlreadyLoading() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\ViewModels\GalleryViewModelTests.cs:line 152
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.42]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReportsProgress [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReportsProgress [71 ms]
+  Error Message:
+   Assert.NotEmpty() Failure: Collection was empty
+  Stack Trace:
+     at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReportsProgress() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 196
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.44]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_EnqueuesProcessPhotoTask_ForEachNewFile [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_EnqueuesProcessPhotoTask_ForEachNewFile [23 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 3
+Actual:   0
+  Stack Trace:
+     at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_EnqueuesProcessPhotoTask_ForEachNewFile() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 82
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.46]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ScanLibraryTask_IsCompletedAfterSuccess [FAIL]
+[xUnit.net 00:00:02.47]     DamYou.Tests.Import.PhotoImportServiceTests.ImportAsync_ReportsProgress [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ScanLibraryTask_IsCompletedAfterSuccess [20 ms]
+  Error Message:
+   System.InvalidOperationException : Sequence contains no elements
+  Stack Trace:
+     at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at lambda_method1157(Closure)
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryQueryExpression.ResultEnumerable.GetEnumerator()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextHelper()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ScanLibraryTask_IsCompletedAfterSuccess() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 66
+--- End of stack trace from previous location ---
+  Failed DamYou.Tests.Import.PhotoImportServiceTests.ImportAsync_ReportsProgress [64 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 5
+Actual:   4
+  Stack Trace:
+     at DamYou.Tests.Import.PhotoImportServiceTests.ImportAsync_ReportsProgress() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Import\PhotoImportServiceTests.cs:line 150
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.49]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReEnqueues_UnprocessedPhotoWithNoQueuedTask [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReEnqueues_UnprocessedPhotoWithNoQueuedTask [21 ms]
+  Error Message:
+   Assert.Single() Failure: The collection was empty
+  Stack Trace:
+     at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_ReEnqueues_UnprocessedPhotoWithNoQueuedTask() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 160
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.50]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_CreatesScanLibraryTask [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_CreatesScanLibraryTask [15 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value is null
+  Stack Trace:
+     at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_CreatesScanLibraryTask() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 55
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:02.55]     DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_RespectsCancellationToken [FAIL]
+  Failed DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_RespectsCancellationToken [28 ms]
+  Error Message:
+   Assert.ThrowsAny() Failure: No exception was thrown
+Expected: typeof(System.OperationCanceledException)
+  Stack Trace:
+     at DamYou.Tests.Pipeline.LibraryScanServiceTests.ScanAsync_RespectsCancellationToken() in C:\src\mikeywashere\dam-you\tests\DamYou.Tests\Pipeline\LibraryScanServiceTests.cs:line 214
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:    17, Passed:   161, Skipped:     4, Total:   182, Duration: 3 s - DamYou.Tests.dll (net10.0)

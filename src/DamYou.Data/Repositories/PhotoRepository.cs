@@ -87,5 +87,18 @@ public sealed class PhotoRepository : IPhotoRepository
         allPaths.AddRange(duplicatePaths);
         return allPaths;
     }
+
+    /// <summary>
+    /// Gets a photo with all its relations (color palettes, detected objects, duplicates, embeddings, OCR text).
+    /// Used for displaying detailed metadata in the photo detail view.
+    /// </summary>
+    public async Task<Photo?> GetPhotoWithRelationsAsync(int photoId, CancellationToken ct = default)
+    {
+        return await _db.Photos
+            .Include(p => p.WatchedFolder)
+            .Include(p => p.PhotoFolder)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == photoId && !p.IsDeleted, ct);
+    }
 }
 #pragma warning restore HAA0301

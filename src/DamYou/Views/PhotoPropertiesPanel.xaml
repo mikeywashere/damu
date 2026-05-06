@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DamYou.ViewModels"
+             xmlns:entities="clr-namespace:DamYou.Data.Entities;assembly=DamYou.Data"
+             x:Class="DamYou.Views.PhotoPropertiesPanel"
+             x:DataType="vm:PhotoDetailViewModel"
+             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+
+    <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}" 
+            StrokeThickness="1,0,0,0"
+            Padding="0">
+        <Grid RowDefinitions="Auto,*" Padding="16" RowSpacing="12">
+        
+        <!-- Header -->
+        <Label Grid.Row="0" 
+               Text="📋 Properties" 
+               FontSize="14" 
+               FontAttributes="Bold" 
+               TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+
+        <!-- Properties Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="0">
+
+                <!-- Color Palette Section -->
+                <VerticalStackLayout IsVisible="{Binding ColorPalette, Converter={StaticResource IntToBoolConverter}}" Spacing="8">
+                    <Label Text="🎨 Color Palette" FontSize="12" FontAttributes="Bold" Opacity="0.7" />
+                    <Label Text="{Binding ColorPalette.ColorsJson, Converter={StaticResource ColorPaletteJsonToStringConverter}}" 
+                           FontSize="11" 
+                           Opacity="0.8"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+
+                <!-- Detected Objects Section -->
+                <VerticalStackLayout IsVisible="{Binding DetectedObjects.Count, Converter={StaticResource IntToBoolConverter}}" Spacing="8">
+                    <Label Text="🔍 Detected Objects" FontSize="12" FontAttributes="Bold" Opacity="0.7" />
+                    <CollectionView ItemsSource="{Binding DetectedObjects}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="entities:PhotoDetectedObject">
+                                <Grid ColumnDefinitions="*,Auto" Padding="4,2" ColumnSpacing="8">
+                                    <Label Grid.Column="0" 
+                                           FontSize="11" 
+                                           Text="{Binding Label}" 
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" 
+                                           FontSize="10" 
+                                           Text="{Binding Confidence, StringFormat='{0:P0}'}" 
+                                           Opacity="0.6" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Duplicates Section -->
+                <VerticalStackLayout IsVisible="{Binding Duplicates.Count, Converter={StaticResource IntToBoolConverter}}" Spacing="8">
+                    <Label Text="📋 Duplicates" FontSize="12" FontAttributes="Bold" Opacity="0.7" />
+                    <CollectionView ItemsSource="{Binding Duplicates}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="entities:PhotoDuplicate">
+                                <VerticalStackLayout Padding="4,4" Spacing="2">
+                                    <Label FontSize="11" Text="{Binding FileName}" LineBreakMode="MiddleTruncation" FontAttributes="Bold" />
+                                    <Label FontSize="10" Text="{Binding FilePath}" LineBreakMode="MiddleTruncation" Opacity="0.6" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Embedding Section -->
+                <VerticalStackLayout IsVisible="{Binding Embedding, Converter={StaticResource IntToBoolConverter}}" Spacing="8">
+                    <Label Text="⚙️ Embedding" FontSize="12" FontAttributes="Bold" Opacity="0.7" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Grid.Column="0" FontSize="11" Text="Model:" Opacity="0.6" />
+                        <Label Grid.Column="1" FontSize="11" Text="{Binding Embedding.ModelName}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Grid.Column="0" FontSize="11" Text="Dims:" Opacity="0.6" />
+                        <Label Grid.Column="1" FontSize="11" Text="{Binding Embedding.Dimensions}" />
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- OCR Text Section -->
+                <VerticalStackLayout IsVisible="{Binding OcrText, Converter={StaticResource IntToBoolConverter}}" Spacing="8">
+                    <Label Text="📝 OCR Text" FontSize="12" FontAttributes="Bold" Opacity="0.7" />
+                    <Label FontSize="11" 
+                           Text="{Binding OcrText.FullText}" 
+                           LineBreakMode="WordWrap"
+                           MaxLines="5"
+                           Opacity="0.8" />
+                </VerticalStackLayout>
+
+                <!-- Loading State -->
+                <VerticalStackLayout IsVisible="{Binding IsLoading}"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Margin="0,20">
+                    <ActivityIndicator IsRunning="True" />
+                    <Label Text="Loading metadata…" FontSize="11" HorizontalOptions="Center" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+
+                <!-- No Data State -->
+                <Label IsVisible="{Binding IsLoading, Converter={StaticResource InvertBoolConverter}}"
+                       Text="No metadata detected"
+                       FontSize="11"
+                       Opacity="0.5"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Margin="0,20" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+        </Grid>
+    </Border>
+</ContentView>

@@ -96,7 +96,7 @@ public sealed class StartupLogicTests
             .ReturnsAsync(new List<DamYou.Data.Entities.Photo>());
 
         var mockScanService = new Mock<ILibraryScanService>();
-        mockScanService.Setup(s => s.ScanAsync(It.IsAny<string>(), It.IsAny<IProgress<ScanProgress>>(), It.IsAny<CancellationToken>()))
+        mockScanService.Setup(s => s.ScanAsync(It.IsAny<IProgress<ScanProgress>>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         var mockTaskRepo = new Mock<IPipelineTaskRepository>();
@@ -109,7 +109,7 @@ public sealed class StartupLogicTests
         await vm.RescanLibraryCommand.ExecuteAsync(CancellationToken.None);
 
         Assert.False(vm.IsScanning);
-        mockScanService.Verify(s => s.ScanAsync(It.IsAny<string>(), It.IsAny<IProgress<ScanProgress>>(), It.IsAny<CancellationToken>()), Times.Once);
+        mockScanService.Verify(s => s.ScanAsync(It.IsAny<IProgress<ScanProgress>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
 

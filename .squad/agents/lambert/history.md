@@ -50,3 +50,12 @@
 - **Scan Now button pattern.** Added a 🔄 button (TextColor="#1976D2") in a new Grid column that calls ScanFolderCommand. The command injects IFolderQueueService and calls EnqueueAsync(path), wrapped in IsBusy to prevent double-taps.
 - **CollectionView column expansion.** When adding a new action column to a DataTemplate Grid, update ColumnDefinitions at the DataTemplate Grid level (not the outer page Grid). Changed "Auto,*,Auto" to "Auto,*,Auto,Auto" and assigned Grid.Column="3" to the remove button.
 - **IFolderQueueService DI.** Already registered as Singleton in MauiProgram.cs — just adding it to FoldersViewModel constructor is sufficient; no DI registration changes needed.
+
+### 2026-05-05 — Photo Detail Modal & Properties Grid Implementation
+
+- **Modal split layout (2:1 ratio).** The photo detail modal uses a Grid with ColumnDefinitions="2*,1*" so the image takes 2/3 width and properties panel takes 1/3. Both containers fill height (Star). The close button (✕) positioned End/Start floats above, spanning both columns, positioning via absolute coordinates in the overlay.
+- **PhotoDetailViewModel lazy-loads relations.** The detail VM fetches PhotoColorPalette, PhotoDetectedObjects, PhotoDuplicates, PhotoEmbedding, and PhotoOcrText in parallel via Task.WhenAll() and DbContext sets. No Include() chains needed—each relation queries independently. IsLoading property drives loading spinner visibility.
+- **Converter refinement for property visibility.** IntToBoolConverter now handles null checks (for nullable properties), int counts, and ICollection.Count to determine visibility. A property section only shows if its related entity/collection is non-empty. Converters remain centralized in Converters.xaml.
+- **ContentView for reusable grid panels.** PhotoPropertiesPanel is a ContentView (not a DataTemplate), making it composable and independently testable. It has its own code-behind (minimal), binding to PhotoDetailViewModel. The parent (GalleryView code-behind) instantiates and binds it dynamically.
+- **Modal cleanup on close.** When the modal closes, the close button handler calls `_photoDetailVm.Clear()` to reset all properties to null/empty, preventing stale data leaking into the next photo view. This pattern works because the ViewModel is Transient (new instance per injection, but reused for the lifetime of the view session).
+

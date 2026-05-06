@@ -9,12 +9,14 @@ namespace DamYou.Views;
 public partial class GalleryView : ContentPage
 {
     private readonly GalleryViewModel _vm;
+    private readonly PhotoDetailViewModel _photoDetailVm;
 
-    public GalleryView(GalleryViewModel vm)
+    public GalleryView(GalleryViewModel vm, PhotoDetailViewModel photoDetailVm)
     {
         InitializeComponent();
         BindingContext = vm;
         _vm = vm;
+        _photoDetailVm = photoDetailVm;
 
         // Set up collection change notification
         _vm.GridPhotos.CollectionChanged += OnGridPhotosChanged;
@@ -241,7 +243,7 @@ public partial class GalleryView : ContentPage
     }
 
     /// <summary>
-    /// Shows a modal dialog with the full-size photo.
+    /// Shows a modal dialog with the full-size photo on the left and properties grid on the right.
     /// </summary>
     private async Task ShowPhotoModalAsync(PhotoGridItem photo)
     {
@@ -250,13 +252,18 @@ public partial class GalleryView : ContentPage
             BackgroundColor = Colors.Black
         };
 
-        var grid = new Grid
+        // Main content grid: image on left, properties panel on right
+        var contentGrid = new Grid
         {
             RowDefinitions = new RowDefinitionCollection { new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } },
-            ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) } }
+            ColumnDefinitions = new ColumnDefinitionCollection 
+            { 
+                new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) },  // Image takes 2/3
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }   // Properties takes 1/3
+            }
         };
 
-        // Full-size image
+        // Full-size image on left
         var image = new Image
         {
             Aspect = Aspect.AspectFit,
@@ -267,7 +274,14 @@ public partial class GalleryView : ContentPage
             converter: new DamYou.Converters.FilePathToImageSourceConverter()));
         image.BindingContext = photo;
 
-        grid.Add(image);
+        contentGrid.Add(image, 0, 0);
+
+        // Properties panel on right
+        var propertiesPanel = new PhotoPropertiesPanel
+        {
+            BindingContext = _photoDetailVm
+        };
+        contentGrid.Add(propertiesPanel, 1, 0);
 
         // Close button (X) in top-right corner
         var closeButton = new Button
@@ -284,7 +298,11 @@ public partial class GalleryView : ContentPage
             HorizontalOptions = LayoutOptions.End,
             VerticalOptions = LayoutOptions.Start
         };
-        closeButton.Clicked += async (s, e) => await modalPage.Navigation.PopModalAsync();
+        closeButton.Clicked += async (s, e) =>
+        {
+            _photoDetailVm.Clear();
+            await modalPage.Navigation.PopModalAsync();
+        };
 
         var overlay = new Grid
         {
@@ -293,16 +311,13 @@ public partial class GalleryView : ContentPage
             Padding = 0
         };
 
-        overlay.Add(grid);
+        overlay.Add(contentGrid);
         overlay.Add(closeButton);
 
         modalPage.Content = overlay;
 
-        // Add keyboard support for ESC key
-        modalPage.Loaded += (s, e) =>
-        {
-            // Platform-specific keyboard handling would go here
-        };
+        // Load photo details
+        await _photoDetailVm.LoadPhotoDetailsAsync(photo);
 
         await Navigation.PushModalAsync(modalPage);
     }

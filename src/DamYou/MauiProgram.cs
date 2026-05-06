@@ -15,6 +15,14 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        // Configure logging early - use default app data path for logs
+        var appDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "DamYou");
+        Directory.CreateDirectory(appDataPath);
+        var logFilePath = Path.Combine(appDataPath, "dam-you.log");
+        LoggingService.ConfigureLogging(logFilePath);
+
         var logger = LoggingService.GetLogger();
 
         logger.Information("=== DAMu App Initialization Started ===");
@@ -59,6 +67,7 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<IFolderPickerService, FolderPickerService>();
         builder.Services.AddSingleton<IQueueSettings, DefaultQueueSettings>();
+        builder.Services.AddSingleton<ILoggingSettings, DefaultLoggingSettings>();
 
         // Analysis services (singletons — expensive ONNX sessions)
         builder.Services.AddSingleton<IHardwareDetectionService, HardwareDetectionService>();
@@ -77,6 +86,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LibrarySetupViewModel>();
         builder.Services.AddTransient<ManageFoldersViewModel>();
         builder.Services.AddTransient<GalleryViewModel>();
+        builder.Services.AddTransient<PhotoDetailViewModel>();
         builder.Services.AddTransient<FoldersViewModel>();
         builder.Services.AddTransient<WorkQueueViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
@@ -86,7 +96,8 @@ public static class MauiProgram
 
         // Background processing
         builder.Services.AddLogging(c => c.AddDebug());
-        builder.Services.AddSingleton<IProcessingWorker, ProcessingHostedService>();
+        builder.Services.AddSingleton<ProcessingHostedService>();
+        builder.Services.AddSingleton<IProcessingWorker, ProcessingHostedService>(sp => sp.GetRequiredService<ProcessingHostedService>());
         builder.Services.AddHostedService(sp => sp.GetRequiredService<ProcessingHostedService>());
 
         // Dedicated file processor (optional, runs independently from folder scanning)
@@ -124,6 +135,14 @@ public static class MauiProgram
 #endif
 
         var app = builder.Build();
+
+        // Apply verbose logging setting if it was previously enabled by the user
+        var loggingSettings = app.Services.GetRequiredService<ILoggingSettings>();
+        if (loggingSettings.IsVerboseLoggingEnabled())
+        {
+            LoggingService.SetVerboseLogging(true);
+            logger.Information("Verbose logging enabled from user preference");
+        }
 
         // Run migrations on startup
         logger.Debug("Running database migrations...");

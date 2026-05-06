@@ -376,7 +376,7 @@ public sealed partial class GalleryViewModel : ObservableObject
                 ScanCurrentFolder = p.CurrentFolder;
             });
 
-            await _scanService.ScanAsync("no", progress, ct);
+            await _scanService.ScanAsync(progress, ct);
             await LoadPhotosAsync(ct);
         }
         catch (OperationCanceledException)

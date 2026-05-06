@@ -39,6 +39,24 @@
                     Margin="0,4,0,0" />
         </VerticalStackLayout>
 
+        <!-- Logging Section -->
+        <VerticalStackLayout Spacing="8">
+            <Label Text="Logging"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+
+            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                <Label Text="Verbose Logging:"
+                       VerticalOptions="Center" />
+                <Switch IsToggled="{Binding IsVerboseLoggingEnabled}"
+                        VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Label Text="Enable detailed logging for troubleshooting. Takes effect immediately."
+                   FontSize="12"
+                   Opacity="0.6" />
+        </VerticalStackLayout>
+
         <!-- Divider -->
         <BoxView HeightRequest="1"
                  Color="{AppThemeBinding Light=LightGray, Dark=#3C3C3C}" />

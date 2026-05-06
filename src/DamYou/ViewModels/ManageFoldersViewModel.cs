@@ -132,14 +132,6 @@ public sealed partial class ManageFoldersViewModel : ObservableObject
         try
         {
             var scanService = Application.Current?.Handler?.MauiContext?.Services.GetRequiredService<ILibraryScanService>();
-            if (scanService != null)
-            {
-                var progress = new Progress<ScanProgress>(p =>
-                {
-                    // Could show progress here if needed
-                });
-                await scanService.ScanAsync("no", progress, ct);
-            }
         }
         catch (Exception ex)
         {
